@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+#MCUExpresso misc
+.mcuxpressoide_packages_support/
+.metadata/
+AzureRTOS_TAD_logs/
+FreeRTOS_TAD_logs/
+source/test/
+source/shoh/.settings/language.settings.xml
