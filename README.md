@@ -2,7 +2,7 @@
 Smart Home Oil Heater is a project for Metropolia UAS course called Multidisciplinary Innovation Project.
 
 Tasks communication:
-
+```
 Rotary: gets rotation dir --- Master --- Temp Task: gets temp
                                 |
                                 |
@@ -10,12 +10,12 @@ Rotary: gets rotation dir --- Master --- Temp Task: gets temp
                                 |
                                 |
 Menu Task ------------------------------------------- Heater Task
-
+```
 
 
 
 common struct:
-
+```c
 typedef struct {
   int8_t temp_real;
 } sensor_temp ;
@@ -28,7 +28,7 @@ typedef struct {
 typedef struct {
   int8_t set_point;
 } user_settings;
-
+```
 
 common struct communication diagram:
 
