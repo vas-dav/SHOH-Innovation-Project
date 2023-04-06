@@ -3,8 +3,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include <cr_section_macros.h>
-#include "FreeRTOSCPP/Kernel.hpp"
-#include "threads/master/Master.h"
+#include "Kernel.hpp"
+#include "Master.h"
 
 int main(void)
 {
