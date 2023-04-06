@@ -9,6 +9,10 @@
 #include <mutex>
 #include "LpcUart.h"
 
+// Remove this when code will be reworked.
+#ifndef LPCUART_NOT_FIXED
+// Remove this when code will be reworked.
+
 
 static LpcUart *u0;
 static LpcUart *u1;
@@ -313,3 +317,7 @@ bool LpcUart::txempty()
 
 	return (RingBuffer_GetCount(&txring) == 0);
 }
+
+// Remove this when code will be reworked.
+#endif /* LPCUART_NOT_FIXED */
+// Remove this when code will be reworked.

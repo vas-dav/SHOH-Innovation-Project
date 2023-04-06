@@ -1,5 +1,10 @@
 #include "LiquidCrystal.h"
 
+// Remove this when code will be reworked.
+#ifndef LiquidCrystal_NOT_FIXED
+// Remove this when code will be reworked.
+
+
 #include <cstring>
 #include "chip.h"
 
@@ -287,3 +292,6 @@ void LiquidCrystal::write4bits(uint8_t value) {
   pulseEnable();
 }
 
+// Remove this when code will be reworked.
+#endif /* LiquidCrystal_NOT_FIXED */
+// Remove this when code will be reworked.

@@ -40,6 +40,10 @@
 
 #include "I2C.h"
 
+// Remove this when code will be reworked.
+#ifndef I2C_NOT_FIXED
+// Remove this when code will be reworked.
+
 I2C::I2C (const I2C_config &cfg) : device (nullptr)
 {
   // if(cfg.device_number == 0) {
@@ -158,3 +162,7 @@ I2C::I2CM_XferBlocking (LPC_I2C_T *pI2C, I2CM_XFER_T *xfer)
     }
   return ret;
 }
+
+// Remove this when code will be reworked.
+#endif /* I2C_NOT_FIXED */
+// Remove this when code will be reworked.
