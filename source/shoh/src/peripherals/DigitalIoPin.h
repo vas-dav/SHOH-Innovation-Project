@@ -8,11 +8,6 @@
 #ifndef DIGITALIOPIN_H_
 #define DIGITALIOPIN_H_
 
-// Remove this when code will be reworked.
-#define DIGITALIOPIN_NOT_FIXED
-#ifndef DIGITALIOPIN_NOT_FIXED
-// Remove this when code will be reworked.
-
 #define UINT8_MAX_VALUE 255
 
 #include <assert.h>
@@ -44,9 +39,5 @@ private:
   DigitalIOConfigStruct _io = { 0, 0, false, false, false, 0, 0, IOCON_DIGMODE_EN};
   void setIoPin ();
 };
-
-//Remove this when code will be reworked.
-#endif /* DIGITALIOPIN_NOT_FIXED */
-//Remove this when code will be reworked.
 
 #endif /* DIGITALIOPIN_H_ */

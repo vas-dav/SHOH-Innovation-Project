@@ -7,10 +7,6 @@
 
 #include "DigitalIoPin.h"
 
-// Remove this when code will be reworked.
-#ifndef DIGITALIOPIN_NOT_FIXED
-// Remove this when code will be reworked.
-
 DigitalIoPin::DigitalIoPin (int port, int pin, bool input, bool pullup,
                             bool invert)
 {
@@ -65,7 +61,3 @@ DigitalIoPin::write (bool value)
   assert (!(_io._input));
   Chip_GPIO_SetPinState (LPC_GPIO, _io._port, _io._pin, ((_io._invert) ? !value : value));
 }
-
-//Remove this when code will be reworked.
-#endif /* DIGITALIOPIN_NOT_FIXED */
-//Remove this when code will be reworked.
