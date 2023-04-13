@@ -38,3 +38,7 @@ AzureRTOS_TAD_logs/
 FreeRTOS_TAD_logs/
 source/test/
 source/shoh/.settings/language.settings.xml
+
+#Code
+
+.vscode/
