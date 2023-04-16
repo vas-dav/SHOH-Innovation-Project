@@ -8,12 +8,8 @@
 #ifndef I2C_H_
 #define I2C_H_
 
-// Remove this when code will be reworked.
-#define I2C_NOT_FIXED
-#ifndef I2C_NOT_FIXED
-// Remove this when code will be reworked.
-
 #include "chip.h"
+#include "board.h"
 
 struct I2C_config {
 	unsigned int device_number;
@@ -34,9 +30,5 @@ private:
 	LPC_I2C_T *device;
 	static uint32_t I2CM_XferBlocking(LPC_I2C_T *pI2C, I2CM_XFER_T *xfer);
 };
-
-// Remove this when code will be reworked.
-#endif /* I2C_NOT_FIXED */
-// Remove this when code will be reworked.
 
 #endif /* I2C_H_ */

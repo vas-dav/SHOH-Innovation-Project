@@ -40,19 +40,24 @@
 
 #include "I2C.h"
 
-// Remove this when code will be reworked.
-#ifndef I2C_NOT_FIXED
-// Remove this when code will be reworked.
-
 I2C::I2C (const I2C_config &cfg) : device (nullptr)
 {
   // if(cfg.device_number == 0) {
-  device = LPC_I2C0;
-  // board init must have been called before the pins can be configured
-  Chip_IOCON_PinMuxSet (LPC_IOCON, 0, 22, IOCON_DIGMODE_EN | cfg.i2c_mode);
-  Chip_IOCON_PinMuxSet (LPC_IOCON, 0, 23, IOCON_DIGMODE_EN | cfg.i2c_mode);
-  Chip_SWM_EnableFixedPin (SWM_FIXED_I2C0_SCL);
-  Chip_SWM_EnableFixedPin (SWM_FIXED_I2C0_SDA);
+  this->device = LPC_I2C0;
+
+  /*
+    Pins
+    The pin requires an external pull-up to provide output functionality.
+    When power is switched off, this pin is floating and does not disturb the I2C lines.
+
+    I2C0_SCL (0, 4).                   (Available for Fast Mode Plus)
+    I2C1_SCL (0, 7), (1, 11), (1, 30). (Not open-drain)
+    I2C0_SDA (0, 5).                   (Available for Fast Mode Plus)
+    I2C1_SDA (1, 3), (1, 14), (1, 24). (Not open-drain)
+  */
+  Chip_SYSCTL_PeriphReset(RESET_I2C0);
+  Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 4, IOCON_DIGMODE_EN | cfg.i2c_mode);
+  Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 5, IOCON_DIGMODE_EN | cfg.i2c_mode);
   //}
   // else {
   // currently we support only I2C number 0
@@ -62,23 +67,21 @@ I2C::I2C (const I2C_config &cfg) : device (nullptr)
     {
       /* Enable I2C clock and reset I2C peripheral - the boot ROM does not
  do this */
-      Chip_I2C_Init (LPC_I2C0);
+      Chip_I2CM_Init(this->device);
 
       /* Setup clock rate for I2C */
-      Chip_I2C_SetClockDiv (LPC_I2C0, cfg.clock_divider);
+      //No clock divider requiered?
 
       /* Setup I2CM transfer rate */
-      Chip_I2CM_SetBusSpeed (LPC_I2C0, cfg.speed);
+      //Bus speed (Determines required amount of clockcyckles for LOW and HIGH signals itself)
+      Chip_I2CM_SetBusSpeed(this->device, cfg.speed);
 
       /* Enable Master Mode */
-      Chip_I2CM_Enable (LPC_I2C0);
+      //Enabled by Chip_I2CM_SendStart()
     }
 }
 
-I2C::~I2C ()
-{
-  // TODO Auto-generated destructor stub
-}
+I2C::~I2C () {}
 
 bool
 I2C::write (uint8_t devAddr, uint8_t *txBuffPtr, uint16_t txSize)
@@ -99,8 +102,7 @@ I2C::transaction (uint8_t devAddr, uint8_t *txBuffPtr, uint16_t txSize,
   I2CM_XFER_T i2cmXferRec;
 
   // make sure that master is idle
-  while (!Chip_I2CM_IsMasterPending (LPC_I2C0))
-    ;
+  while (Chip_I2CM_StateChanged(this->device) == 0);
 
   /* Setup I2C transfer record */
   i2cmXferRec.slaveAddr = devAddr;
@@ -110,7 +112,7 @@ I2C::transaction (uint8_t devAddr, uint8_t *txBuffPtr, uint16_t txSize,
   i2cmXferRec.txBuff = txBuffPtr;
   i2cmXferRec.rxBuff = rxBuffPtr;
 
-  I2CM_XferBlocking (LPC_I2C0, &i2cmXferRec);
+  I2CM_XferBlocking (this->device, &i2cmXferRec);
   // Chip_I2CM_XferBlocking returns before stop condition is fully completed
   // therefore we need to wait for master to be idle when doing back-to-back
   // transactions (see beginning of the function)
@@ -140,7 +142,8 @@ I2C::I2CM_XferBlocking (LPC_I2C_T *pI2C, I2CM_XFER_T *xfer)
   /* set the transfer status as busy */
   xfer->status = I2CM_STATUS_BUSY;
   /* Clear controller state. */
-  Chip_I2CM_ClearStatus (pI2C, I2C_STAT_MSTRARBLOSS | I2C_STAT_MSTSTSTPERR);
+	Chip_I2CM_ResetControl(pI2C);
+
   /* Write Address and RW bit to data register */
   // Chip_I2CM_WriteByte(pI2C, (xfer->slaveAddr << 1) | (xfer->txSz == 0)); //
   // original NXP version
@@ -154,7 +157,7 @@ I2C::I2CM_XferBlocking (LPC_I2C_T *pI2C, I2CM_XFER_T *xfer)
   while (ret == 0)
     {
       /* wait for status change interrupt */
-         while (!Chip_I2CM_IsMasterPending (pI2C))
+         while (Chip_I2CM_StateChanged(pI2C) == 0)
         {
         }
       /* call state change handler */
@@ -162,7 +165,3 @@ I2C::I2CM_XferBlocking (LPC_I2C_T *pI2C, I2CM_XFER_T *xfer)
     }
   return ret;
 }
-
-// Remove this when code will be reworked.
-#endif /* I2C_NOT_FIXED */
-// Remove this when code will be reworked.
