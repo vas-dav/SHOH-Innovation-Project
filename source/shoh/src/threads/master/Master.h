@@ -12,6 +12,7 @@
 #include "board.h"
 #include "FreeRTOSCPP/Task.hpp"
 #include "FreeRTOSCPP/Kernel.hpp"
+#include "threads/common/ThreadCommon.h"
 #include "task.h"
 
 
@@ -28,6 +29,7 @@ public:
 	void taskFunction();
 private:
 	int led;
+	std::shared_ptr<ThreadCommon::Event> message;
 };
 
 
