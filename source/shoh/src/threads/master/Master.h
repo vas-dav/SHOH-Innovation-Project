@@ -29,7 +29,7 @@ public:
 	void taskFunction();
 private:
 	int led;
-	std::shared_ptr<ThreadCommon::Event> message;
+	//std::shared_ptr<ThreadCommon::Event> message;
 };
 
 
