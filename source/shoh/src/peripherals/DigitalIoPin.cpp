@@ -61,4 +61,3 @@ DigitalIoPin::write (bool value)
   assert (!(_io._input));
   Chip_GPIO_SetPinState (LPC_GPIO, _io._port, _io._pin, ((_io._invert) ? !value : value));
 }
-

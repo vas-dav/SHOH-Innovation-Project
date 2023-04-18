@@ -8,6 +8,12 @@
 #ifndef LPCUART_H_
 #define LPCUART_H_
 
+// Remove this when code will be reworked.
+#define LPCUART_NOT_FIXED
+#ifndef LPCUART_NOT_FIXED
+// Remove this when code will be reworked.
+
+
 #include "chip.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -68,5 +74,9 @@ private:
 	Fmutex read_mutex;
 	Fmutex write_mutex;
 };
+
+// Remove this when code will be reworked.
+#endif /* LPCUART_NOT_FIXED */
+// Remove this when code will be reworked.
 
 #endif /* LPCUART_H_ */

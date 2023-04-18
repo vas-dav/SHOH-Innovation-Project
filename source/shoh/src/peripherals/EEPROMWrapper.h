@@ -8,6 +8,12 @@
 #ifndef EEPROMWRAPPER_H_
 #define EEPROMWRAPPER_H_
 
+// Remove this when code will be reworked.
+#define EEPROMWRAPPER_NOT_FIXED
+#ifndef EEPROMWRAPPER_NOT_FIXED
+// Remove this when code will be reworked.
+
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "chip.h"
@@ -79,5 +85,9 @@ private:
   void eeprom_use (uint8_t *data, uint32_t addr, uint32_t size, bool mode);
   uint8_t buffer[EEPROM_MAX_BUFER_SIZE] = { 0 };
 };
+
+// Remove this when code will be reworked.
+#endif /* EEPROMWRAPPER_NOT_FIXED */
+// Remove this when code will be reworked.
 
 #endif /* EEPROMWRAPPER_H_ */

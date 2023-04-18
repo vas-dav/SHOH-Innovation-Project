@@ -7,6 +7,10 @@
 
 #include <EEPROMWrapper.h>
 
+// Remove this when code will be reworked.
+#ifndef EEPROMWRAPPER_NOT_FIXED
+// Remove this when code will be reworked.
+
 EEPROM_Wrapper::EEPROM_Wrapper ()
 {
   /* Enable EEPROM clock and reset EEPROM controller */
@@ -93,3 +97,7 @@ EEPROM_Wrapper::write_to (uint32_t addr, void *data, uint32_t size_of_data)
   e_memcpy (data, buffer, size_of_data);
   eeprom_use (buffer, addr, size_of_data, WRITE);
 }
+
+// Remove this when code will be reworked.
+#endif /* EEPROMWRAPPER_NOT_FIXED */
+// Remove this when code will be reworked.

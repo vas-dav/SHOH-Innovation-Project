@@ -9,6 +9,7 @@
 #define I2C_H_
 
 #include "chip.h"
+#include "board.h"
 
 struct I2C_config {
 	unsigned int device_number;
