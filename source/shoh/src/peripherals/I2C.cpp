@@ -55,9 +55,10 @@ I2C::I2C (const I2C_config &cfg) : device (nullptr)
     I2C0_SDA (0, 5).                   (Available for Fast Mode Plus)
     I2C1_SDA (1, 3), (1, 14), (1, 24). (Not open-drain)
   */
+  //Manual: Table 83 & 90
   Chip_SYSCTL_PeriphReset(RESET_I2C0);
-  Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 4, IOCON_DIGMODE_EN | cfg.i2c_mode);
-  Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 5, IOCON_DIGMODE_EN | cfg.i2c_mode);
+  Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 4, IOCON_FUNC1 | IOCON_DIGMODE_EN | cfg.i2c_mode);
+  Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 5, IOCON_FUNC1 | IOCON_DIGMODE_EN | cfg.i2c_mode);
   //}
   // else {
   // currently we support only I2C number 0
