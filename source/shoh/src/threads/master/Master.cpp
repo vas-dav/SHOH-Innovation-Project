@@ -7,6 +7,14 @@
 
 #include "Master.h"
 
+Master::Master(std::string name, size_t stack_size, void* pvParams, size_t task_priority)
+: name(name), stack_size(stack_size), pvParams(pvParams), task_priority(task_priority)
+{
+	xTaskCreate (Master::taskWrapper, "Master_thread", this->stack_size, this->pvParams, this->task_priority, this->master_task_handle);	
+}
+
+Master::~Master(){}
+
 void Master::taskFunction() {
 	bool LedState = true;
 	for (;;) {
@@ -19,4 +27,3 @@ void Master::taskFunction() {
 		vTaskDelay(1000);
 	}
 }
-

@@ -10,25 +10,30 @@
 
 #include "chip.h"
 #include "board.h"
-#include "FreeRTOSCPP/Task.hpp"
-#include "FreeRTOSCPP/Kernel.hpp"
 #include "threads/common/ThreadCommon.h"
 #include "task.h"
+#include <string>
 
-
-class Master : public FreeRTOS::Task {
+class Master {
 public:
-	Master(): FreeRTOS::Task((tskIDLE_PRIORITY + 1UL),
-			  configMINIMAL_STACK_SIZE * 10,
-			  "master"){};
-	virtual ~Master() = default;
-
-	Master(Master&&) noexcept = default;
-	Master& operator=(Master&&) noexcept = default;
-
+	Master(std::string name, size_t stack_size, void* pvParams, size_t task_priority);
+	virtual ~Master();
 	void taskFunction();
+
+	static void taskWrapper(void *pvParams) {
+		Master* pSelf = reinterpret_cast<Master*>(pvParams);
+		pSelf->taskFunction();
+	}
+
+	//Master(Master&&) noexcept = default;
+	//Master& operator=(Master&&) noexcept = default;
 private:
 	int led;
+	std::string name;
+	size_t stack_size;
+	void* pvParams;
+	size_t task_priority;
+	TaskHandle_t* master_task_handle;
 	//std::shared_ptr<ThreadCommon::Event> message;
 };
 
