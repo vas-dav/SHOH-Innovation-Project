@@ -16,26 +16,17 @@
 
 class Master {
 public:
-	Master(std::string name, size_t stack_size, void* pvParams, size_t task_priority);
-	virtual ~Master();
+	Master(){};
+	virtual ~Master() = default;
 	void taskFunction();
-
-	static void taskWrapper(void *pvParams) {
-		Master* pSelf = reinterpret_cast<Master*>(pvParams);
-		pSelf->taskFunction();
-	}
 
 	//Master(Master&&) noexcept = default;
 	//Master& operator=(Master&&) noexcept = default;
 private:
-	int led;
-	std::string name;
-	size_t stack_size;
-	void* pvParams;
-	size_t task_priority;
-	TaskHandle_t* master_task_handle;
-	//std::shared_ptr<ThreadCommon::Event> message;
+	ThreadCommon::Event* message;
 };
+
+void master_thread(void* pvParams);
 
 
 #endif /* THREADS_MASTER_MASTER_H_ */
