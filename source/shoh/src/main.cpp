@@ -27,7 +27,7 @@ int main(void)
   QueueHandle_t master_event_all_q = qmanager->getQueue(ThreadCommon::QueueManager::master_event_all);
   ThreadCommon::Event* e = new ThreadCommon::Event(ThreadCommon::Null, 0);
 
-  xQueueSend(master_event_all_q, static_cast<void *>(e), 0);
+  qmanager->send<ThreadCommon::Event>(ThreadCommon::QueueManager::master_event_all, e, 1000);
   //</Queue_test>
 
   // Start the real time kernel with preemption.

@@ -13,12 +13,11 @@ Master::Master(ThreadCommon::QueueManager* qm) : _qm(qm)
 }
 
 void Master::taskFunction() {
-	QueueHandle_t master_event_all_q = _qm->getQueue(ThreadCommon::QueueManager::master_event_all);
 	ThreadCommon::Event data(ThreadCommon::Null, 0);
 	int led = 0;
 	bool LedState = true;
 	for (;;) {
-		xQueueReceive(master_event_all_q, static_cast<void*>(&data), portMAX_DELAY);
+		_qm->receive<ThreadCommon::Event>(ThreadCommon::QueueManager::master_event_all, &data, portMAX_DELAY);
 		Board_LED_Set(led, LedState);
 		LedState = (bool) !LedState;
 		led++;

@@ -76,6 +76,21 @@ namespace ThreadCommon
             ~QueueManager() = default;
             bool createQueue(size_t queue_length, size_t item_size, Queue_id qid);
             QueueHandle_t getQueue(Queue_id qid);
+            template<class T> bool send(Queue_id qid, T* data, TickType_t timeout){
+            	QueueHandle_t q = this->getQueue(qid);
+                BaseType_t qCheck = xQueueSend(q,
+                                               static_cast<void*>(data),
+                                               timeout);
+                return (qCheck == pdTRUE);
+            }
+            template<class T> bool receive(Queue_id qid, T* data, TickType_t timeout){
+            	QueueHandle_t q = this->getQueue(qid);
+                BaseType_t qCheck = xQueueReceive(q,
+                                                  static_cast<void*>(data),
+                                                  timeout);
+                return (qCheck == pdTRUE);
+            }
+
         private:
             std::map <Queue_id, QueueHandle_t> queues;
     };
