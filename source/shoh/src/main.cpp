@@ -3,18 +3,21 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include <cr_section_macros.h>
-#include "Kernel.hpp"
+#include "common/ThreadCommon.h"
 #include "Master.h"
+
 
 int main(void)
 {
   SystemCoreClockUpdate();
   Board_Init();
-  // Create a task before starting the kernel.
-  Master master;
-
+  ThreadCommon::ThreadManager manager;
+  manager.createTask(master_thread, "master",
+                     configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
+                     nullptr);
   // Start the real time kernel with preemption.
-  FreeRTOS::Kernel::startScheduler();
+  //FreeRTOS::Kernel::startScheduler();
+  vTaskStartScheduler ();
 
   return 1;
 }

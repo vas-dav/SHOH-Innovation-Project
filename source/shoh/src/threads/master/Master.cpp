@@ -8,6 +8,7 @@
 #include "Master.h"
 
 void Master::taskFunction() {
+	int led = 0;
 	bool LedState = true;
 	for (;;) {
 		Board_LED_Set(led, LedState);
@@ -20,3 +21,8 @@ void Master::taskFunction() {
 	}
 }
 
+
+void master_thread(void* pvParams) {
+	Master m;
+	m.taskFunction();
+}
