@@ -7,22 +7,25 @@
 
 #include "Master.h"
 
+Master::Master(ThreadCommon::QueueManager* qm) : _qm(qm)
+{
+
+}
+
 void Master::taskFunction() {
+	ThreadCommon::Event data(ThreadCommon::Null, 0);
 	int led = 0;
 	bool LedState = true;
 	for (;;) {
-		Board_LED_Set(led, LedState);
-		LedState = (bool) !LedState;
-		led++;
-		if(led > 2){
-			led = 0;
+		_qm->receive<ThreadCommon::Event>(ThreadCommon::QueueManager::master_event_all, &data, portMAX_DELAY);
+		if(data.getData() == 1 && data.getType() == ThreadCommon::EventType::Rotary){
+			Board_LED_Set(led, LedState);
 		}
-		vTaskDelay(1000);
 	}
 }
 
 
 void master_thread(void* pvParams) {
-	Master m;
+	Master m(static_cast<ThreadCommon::QueueManager*>(pvParams));
 	m.taskFunction();
 }

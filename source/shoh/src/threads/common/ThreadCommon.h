@@ -11,6 +11,7 @@
 #include "board.h"
 #include "FreeRTOS.h"
 #include <string>
+#include <map>
 #include "queue.h"
 #include "task.h"
 #include <assert.h>
@@ -19,6 +20,7 @@ namespace ThreadCommon
 {
     typedef enum EventType
     {
+        Null,
         Rotary,
         Temperature,
         Manager
@@ -61,12 +63,46 @@ namespace ThreadCommon
         private:
     };
 
+    class QueueManager
+    {
+        public:
+            enum Queue_id {
+                master_event_all,
+                relay_event_master,
+                manager_event_master,
+                ui_event_manager
+            };
+            QueueManager();
+            ~QueueManager() = default;
+            bool createQueue(size_t queue_length, size_t item_size, Queue_id qid);
+            QueueHandle_t getQueue(Queue_id qid);
+            template<class T> bool send(Queue_id qid, T* data, TickType_t timeout){
+            	QueueHandle_t q = this->getQueue(qid);
+                BaseType_t qCheck = xQueueSend(q,
+                                               static_cast<void*>(data),
+                                               timeout);
+                return (qCheck == pdTRUE);
+            }
+            template<class T> bool receive(Queue_id qid, T* data, TickType_t timeout){
+            	QueueHandle_t q = this->getQueue(qid);
+                BaseType_t qCheck = xQueueReceive(q,
+                                                  static_cast<void*>(data),
+                                                  timeout);
+                return (qCheck == pdTRUE);
+            }
+
+        private:
+            std::map <Queue_id, QueueHandle_t> queues;
+    };
+
     /* global variables */
     /* 'receiver'_'what'_'sender'_q */
+    /*
     extern QueueHandle_t master_event_all_q;
     extern QueueHandle_t relay_event_master_q;
     extern QueueHandle_t manager_event_master_q;
     extern QueueHandle_t ui_event_manager_q;
+    */
 }
 
 #endif /*__THREAD_COMMON_H_*/

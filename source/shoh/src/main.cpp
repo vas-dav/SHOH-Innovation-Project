@@ -11,10 +11,25 @@ int main(void)
 {
   SystemCoreClockUpdate();
   Board_Init();
-  ThreadCommon::ThreadManager manager;
-  manager.createTask(master_thread, "master",
+  ThreadCommon::ThreadManager* manager = new ThreadCommon::ThreadManager;
+  ThreadCommon::QueueManager* qmanager = new ThreadCommon::QueueManager;
+  //Creating queues
+  qmanager->createQueue(100,
+                        sizeof(ThreadCommon::Event),
+                        ThreadCommon::QueueManager::master_event_all);
+
+  //Creating tasks
+  manager->createTask(master_thread, "master",
                      configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
-                     nullptr);
+                     static_cast<void*>(qmanager));
+  
+  //<Queue_test>
+  QueueHandle_t master_event_all_q = qmanager->getQueue(ThreadCommon::QueueManager::master_event_all);
+  ThreadCommon::Event* e = new ThreadCommon::Event(ThreadCommon::Rotary, 1);
+
+  qmanager->send<ThreadCommon::Event>(ThreadCommon::QueueManager::master_event_all, e, 1000);
+  //</Queue_test>
+
   // Start the real time kernel with preemption.
   //FreeRTOS::Kernel::startScheduler();
   vTaskStartScheduler ();

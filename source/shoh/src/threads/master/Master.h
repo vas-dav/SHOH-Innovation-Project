@@ -16,7 +16,7 @@
 
 class Master {
 public:
-	Master(){};
+	Master(ThreadCommon::QueueManager* qm);
 	virtual ~Master() = default;
 	void taskFunction();
 
@@ -24,6 +24,7 @@ public:
 	//Master& operator=(Master&&) noexcept = default;
 private:
 	ThreadCommon::Event* message;
+	ThreadCommon::QueueManager* _qm;
 };
 
 void master_thread(void* pvParams);
