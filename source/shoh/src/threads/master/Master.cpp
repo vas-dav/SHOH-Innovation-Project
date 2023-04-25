@@ -7,10 +7,18 @@
 
 #include "Master.h"
 
+Master::Master(ThreadCommon::QueueManager* qm) : _qm(qm)
+{
+
+}
+
 void Master::taskFunction() {
+	QueueHandle_t master_event_all_q = _qm->getQueue(ThreadCommon::QueueManager::master_event_all);
+	ThreadCommon::Event* data;
 	int led = 0;
 	bool LedState = true;
 	for (;;) {
+		xQueueReceive(master_event_all_q, static_cast<void*>(data), portMAX_DELAY);
 		Board_LED_Set(led, LedState);
 		LedState = (bool) !LedState;
 		led++;
@@ -23,6 +31,6 @@ void Master::taskFunction() {
 
 
 void master_thread(void* pvParams) {
-	Master m;
+	Master m(static_cast<ThreadCommon::QueueManager*>(pvParams));
 	m.taskFunction();
 }
