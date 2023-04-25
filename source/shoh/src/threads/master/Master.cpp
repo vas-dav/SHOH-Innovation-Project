@@ -18,13 +18,9 @@ void Master::taskFunction() {
 	bool LedState = true;
 	for (;;) {
 		_qm->receive<ThreadCommon::Event>(ThreadCommon::QueueManager::master_event_all, &data, portMAX_DELAY);
-		Board_LED_Set(led, LedState);
-		LedState = (bool) !LedState;
-		led++;
-		if(led > 2){
-			led = 0;
+		if(data.getData() == 1 && data.getType() == ThreadCommon::EventType::Rotary){
+			Board_LED_Set(led, LedState);
 		}
-		vTaskDelay(1000);
 	}
 }
 
