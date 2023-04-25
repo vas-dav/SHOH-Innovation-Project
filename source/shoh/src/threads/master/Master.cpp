@@ -13,12 +13,12 @@ Master::Master(ThreadCommon::QueueManager* qm) : _qm(qm)
 }
 
 void Master::taskFunction() {
-	ThreadCommon::Event data(ThreadCommon::Null, 0);
+	Event data(Event::Null, 0);
 	int led = 0;
 	bool LedState = true;
 	for (;;) {
-		_qm->receive<ThreadCommon::Event>(ThreadCommon::QueueManager::master_event_all, &data, portMAX_DELAY);
-		if(data.getData() == 1 && data.getType() == ThreadCommon::EventType::Rotary){
+		_qm->receive<Event>(ThreadCommon::QueueManager::master_event_all, &data, portMAX_DELAY);
+		if(data.getDataOf(Event::Rotary) == 1){
 			Board_LED_Set(led, LedState);
 		}
 	}

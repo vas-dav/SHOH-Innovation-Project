@@ -15,7 +15,7 @@ int main(void)
   ThreadCommon::QueueManager* qmanager = new ThreadCommon::QueueManager;
   //Creating queues
   qmanager->createQueue(100,
-                        sizeof(ThreadCommon::Event),
+                        sizeof(Event),
                         ThreadCommon::QueueManager::master_event_all);
 
   //Creating tasks
@@ -25,9 +25,9 @@ int main(void)
   
   //<Queue_test>
   QueueHandle_t master_event_all_q = qmanager->getQueue(ThreadCommon::QueueManager::master_event_all);
-  ThreadCommon::Event* e = new ThreadCommon::Event(ThreadCommon::Rotary, 1);
+  Event* e = new Event(Event::Rotary, 1);
 
-  qmanager->send<ThreadCommon::Event>(ThreadCommon::QueueManager::master_event_all, e, 1000);
+  qmanager->send<Event>(ThreadCommon::QueueManager::master_event_all, e, 1000);
   //</Queue_test>
 
   // Start the real time kernel with preemption.
