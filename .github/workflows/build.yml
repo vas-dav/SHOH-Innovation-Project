@@ -8,11 +8,13 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Setup MCUXpresso IDE
-      uses: NXP-Micro/setup-mcuxpresso-ide@v1.3
-      with:
-        version: '11.3.0'
+    - name: Install MCUXpresso IDE command-line tools
+      run: |
+        wget https://www.nxp.com/lgfiles/sdk/tools/installers/mcuxpressoide-11.3.0_5220.x86_64.deb.bin
+        chmod +x mcuxpressoide-11.3.0_5220.x86_64.deb.bin
+        ./mcuxpressoide-11.3.0_5220.x86_64.deb.bin --accept-license --auto-accept
     - name: Build project
       run: |
         cd source/shoh
         mcuxpressoide -nosplash -data . -import . -build Build -cleanBuild all
+
