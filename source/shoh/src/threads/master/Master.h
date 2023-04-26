@@ -10,7 +10,8 @@
 
 #include "chip.h"
 #include "board.h"
-#include "threads/common/ThreadCommon.h"
+#include "ThreadCommon.h"
+#include "Event.h"
 #include "task.h"
 #include <string>
 
@@ -23,7 +24,7 @@ public:
 	//Master(Master&&) noexcept = default;
 	//Master& operator=(Master&&) noexcept = default;
 private:
-	ThreadCommon::Event* message;
+	Event* message;
 	ThreadCommon::QueueManager* _qm;
 };
 
