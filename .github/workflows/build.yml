@@ -7,14 +7,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: 
+      image: nxpsemiconductor/mcuxpressoide:11.5.0_5944.x86_64
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Setup MCUXpresso IDE
-      uses: NXP-Micro/setup-mcuxpresso-ide@v1.3
-      with:
-        version: '11.3.0'
-    - name: Build project
-      run: |
-        cd source/shoh
-        mcuxpressoide -nosplash -data . -import . -build Build -cleanBuild all
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Build Project
+        run: |
+          cd source/shoh
+          mcuxpressoide -nosplash -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import . -build all -data .workspace
+
