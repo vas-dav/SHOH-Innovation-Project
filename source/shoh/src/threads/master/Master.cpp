@@ -14,7 +14,6 @@ Master::Master(ThreadCommon::QueueManager* qm) : _qm(qm)
 
 void Master::taskFunction() {
 	Event data(Event::Null, 0);
-	int led = 0;
 	bool LedState = true;
 	for (;;) {
 		_qm->receive<Event>(ThreadCommon::QueueManager::master_event_all, &data, portMAX_DELAY);

@@ -21,8 +21,6 @@ public:
 	virtual ~Master() = default;
 	void taskFunction();
 
-	//Master(Master&&) noexcept = default;
-	//Master& operator=(Master&&) noexcept = default;
 private:
 	Event* message;
 	ThreadCommon::QueueManager* _qm;

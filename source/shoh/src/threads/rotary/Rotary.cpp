@@ -73,8 +73,3 @@ void rotary_thread(void* pvParams)
 	Rotary r(static_cast<ThreadCommon::QueueManager*>(pvParams));
 	r.taskFunction();
 }
-
-static inline void sendActionAndAssertQueue (uint8_t *data, BaseType_t *const pxHPW)
-{
-
-}
