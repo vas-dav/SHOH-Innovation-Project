@@ -75,16 +75,16 @@ DigitalIoPin::setIsr ()
 	Chip_Clock_SetIOCONFiltClockDiv(0, 64);
 
   Chip_IOCON_PinMuxSet (LPC_IOCON, _io._port, _io._pin,
-                        (_io.IOCON_mode | _io.DigitalEn 
-                        | _io.IOCON_inv | IOCON_CLKDIV(0) 
-                        | IOCON_S_MODE(3)));
+						(_io.IOCON_mode | _io.DigitalEn
+						| _io.IOCON_inv | IOCON_CLKDIV(0)
+						| IOCON_S_MODE(3)));
   /**	False direction equals input */
   Chip_GPIO_SetPinDIR (LPC_GPIO, _io._port, _io._pin, direction);
 
   /* Enable PININT clock if it was not enabled before */
   if ((LPC_SYSCTL->SYSAHBCLKCTRL & (1 << SYSCTL_CLOCK_PINT)) == 0)
   {
-    Chip_Clock_EnablePeriphClock(SYSCTL_CLOCK_PINT);
+	Chip_Clock_EnablePeriphClock(SYSCTL_CLOCK_PINT);
   }
   /* Configure interrupt channel for the GPIO pin in SysCon block */
 	Chip_SYSCTL_SetPinInterrupt(_io.isr_i, _io._port, _io._pin);

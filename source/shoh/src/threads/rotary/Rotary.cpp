@@ -13,24 +13,21 @@ extern "C"
   void
   PIN_INT0_IRQHandler (void)
   {
-    //portEND_SWITCHING_ISR ();
+	Chip_PININT_ClearIntStatus (LPC_PININT, PININTCH (PIN_INT0_IRQn));
   }
 
   void
   PIN_INT1_IRQHandler (void)
   {
-    //portEND_SWITCHING_ISR ();
+    Chip_PININT_ClearIntStatus (LPC_PININT, PININTCH (PIN_INT1_IRQn));
   }
 
   void
   PIN_INT2_IRQHandler (void)
   {
-    //portEND_SWITCHING_ISR ();
+    Chip_PININT_ClearIntStatus (LPC_PININT, PININTCH (PIN_INT2_IRQn));
   }
 }
-// For example
-#define GPIO_PININT_PIN     1	/* GPIO pin number mapped to PININT */
-#define GPIO_PININT_PORT    0 /* GPIO port number mapped to PININT */
 
 Rotary::Rotary(ThreadCommon::QueueManager* qm) : _qm(qm) 
 {
@@ -44,7 +41,10 @@ void Rotary::taskFunction()
 Event data(Event::Null, 0);
 	Event* e = new Event(Event::Rotary, ThreadCommon::RotaryAction::Idle);
 	_qm->send<Event>(ThreadCommon::QueueManager::master_event_all, e, 10);
-	for (;;) {}
+	for (;;)
+	{
+		vTaskDelay(500);
+	}
 }
 
 void rotary_thread(void* pvParams)
