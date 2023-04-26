@@ -1,58 +1,39 @@
 /*
- * EEPROMWrapper.h
+ * EEPROMio.h
  *
  *  Created on: Dec 4, 2022
  *      Author: tylen
  */
 
-#ifndef EEPROMWRAPPER_H_
-#define EEPROMWRAPPER_H_
-
-// Remove this when code will be reworked.
-#define EEPROMWRAPPER_NOT_FIXED
-#ifndef EEPROMWRAPPER_NOT_FIXED
-// Remove this when code will be reworked.
-
+#ifndef EEPROMIO_H_
+#define EEPROMIO_H_
 
 #include "FreeRTOS.h"
 #include "task.h"
 #include "chip.h"
+#include "board.h"
 #include <assert.h>
 #include <string>
-
-
-typedef void (*IAP_call) (uint32_t[], uint32_t[]);
-
-typedef struct _eeprom
-{
-  uint32_t data;
-  uint32_t addr;
-  uint32_t size;
-  uint32_t mode;
-  uint32_t clock;
-} EEPROM;
+#include <map>
 
 #define READ true
 #define WRITE false
 #define EEPROM_MAX_BUFER_SIZE 1000
+#define EEPROM_START_ADDR 0x00000100
 
-class EEPROM_Wrapper
+class EEPROMio
 {
 public:
   /**
    * @brief Construct a new eeprom wrapper object
    *
    */
-  EEPROM_Wrapper ();
-  virtual ~EEPROM_Wrapper ();
-  /**
-   * @brief Read a string from EEPROM
-   *
-   * @param addr - address to read from
-   * @param amount - amount of bytes to read
-   * @return std::string - that was read
-   */
-  std::string str_read_from (uint32_t addr, uint32_t amount);
+  EEPROMio ()
+  {
+    SystemCoreClockUpdate();
+    SysTick_Config(SystemCoreClock / 10);
+  }
+  virtual ~EEPROMio () = default;
   /**
    * @brief Write a string to EEPROM
    *
@@ -78,16 +59,20 @@ public:
   void write_to (uint32_t addr, void *data, uint32_t size_of_data);
 
 private:
-  IAP_call iap_exec;
-  uint32_t command[5], result[5];
+  typedef struct _eeprom
+  {
+    uint32_t data;
+    uint32_t addr;
+    uint32_t size;
+    uint32_t mode;
+    uint32_t clock;
+  } EEPROM;
+
+  unsigned int command[5], result[4];
   EEPROM rom = { 0, 0, 0, 0, 72000 };
   void eeprom_execute (EEPROM *rom);
   void eeprom_use (uint8_t *data, uint32_t addr, uint32_t size, bool mode);
   uint8_t buffer[EEPROM_MAX_BUFER_SIZE] = { 0 };
 };
 
-// Remove this when code will be reworked.
-#endif /* EEPROMWRAPPER_NOT_FIXED */
-// Remove this when code will be reworked.
-
-#endif /* EEPROMWRAPPER_H_ */
+#endif /* EEPROMIO_H_ */
