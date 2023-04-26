@@ -10,8 +10,8 @@
 
 #include "chip.h"
 #include "board.h"
-#include "threads/common/ThreadCommon.h"
-#include "threads/common/Event.h"
+#include "ThreadCommon.h"
+#include "Event.h"
 #include "task.h"
 #include <string>
 

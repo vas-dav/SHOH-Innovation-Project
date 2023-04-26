@@ -3,7 +3,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include <cr_section_macros.h>
-#include "common/ThreadCommon.h"
+#include "ThreadCommon.h"
 #include "Master.h"
 
 
@@ -24,7 +24,6 @@ int main(void)
                      static_cast<void*>(qmanager));
   
   //<Queue_test>
-  QueueHandle_t master_event_all_q = qmanager->getQueue(ThreadCommon::QueueManager::master_event_all);
   Event* e = new Event(Event::Rotary, 1);
 
   qmanager->send<Event>(ThreadCommon::QueueManager::master_event_all, e, 1000);
