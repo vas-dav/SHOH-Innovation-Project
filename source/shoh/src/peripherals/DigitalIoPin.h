@@ -23,13 +23,14 @@ typedef struct DigitalIOConfigStruct
   uint32_t IOCON_mode;
   uint32_t IOCON_inv;
   uint32_t DigitalEn;
+  IRQn_Type isr_i;
 } DigitalIOConfigStruct;
 
 class DigitalIoPin
 {
 public:
   DigitalIoPin (int port, int pin, bool input = true, bool pullup = true,
-                bool invert = false);
+                bool invert = false, bool isr = false, IRQn_Type isr_index = PIN_INT0_IRQn);
   DigitalIoPin (const DigitalIoPin &) = delete;
   virtual ~DigitalIoPin ();
   bool read ();
@@ -38,6 +39,7 @@ public:
 private:
   DigitalIOConfigStruct _io = { 0, 0, false, false, false, 0, 0, IOCON_DIGMODE_EN};
   void setIoPin ();
+  void setIsr();
 };
 
 #endif /* DIGITALIOPIN_H_ */

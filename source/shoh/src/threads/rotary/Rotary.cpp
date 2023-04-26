@@ -6,8 +6,36 @@
  */
 
 #include "Rotary.h"
+#include "board.h"
 
-Rotary::Rotary(ThreadCommon::QueueManager* qm) : _qm(qm) {}
+extern "C" 
+{
+  void
+  PIN_INT0_IRQHandler (void)
+  {
+    //portEND_SWITCHING_ISR ();
+  }
+
+  void
+  PIN_INT1_IRQHandler (void)
+  {
+    //portEND_SWITCHING_ISR ();
+  }
+
+  void
+  PIN_INT2_IRQHandler (void)
+  {
+    //portEND_SWITCHING_ISR ();
+  }
+}
+// For example
+#define GPIO_PININT_PIN     1	/* GPIO pin number mapped to PININT */
+#define GPIO_PININT_PORT    0 /* GPIO port number mapped to PININT */
+
+Rotary::Rotary(ThreadCommon::QueueManager* qm) : _qm(qm) 
+{
+
+}
 
 Rotary::~Rotary() {}
 

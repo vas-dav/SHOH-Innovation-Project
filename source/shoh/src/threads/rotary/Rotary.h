@@ -10,6 +10,7 @@
 
 #include "Event.h"
 #include "ThreadCommon.h"
+#include "DigitalIoPin.h"
 
 class Rotary {
 public:
@@ -19,6 +20,9 @@ public:
 private:
 	Event* message;
 	ThreadCommon::QueueManager* _qm;
+	DigitalIoPin signal[3] = { { 0, 6, true, false, false, true, PIN_INT0_IRQn},
+                               { 0, 5, true, false, false, true, PIN_INT1_IRQn},
+                               { 1, 8, true, false, false, true, PIN_INT2_IRQn} };
 };
 
 void rotary_thread(void* pvParams);
