@@ -14,7 +14,6 @@
 #include "board.h"
 #include <assert.h>
 #include <string>
-#include <map>
 
 #define READ true
 #define WRITE false
