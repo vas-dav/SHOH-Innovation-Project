@@ -1,7 +1,9 @@
 name: Build project from mcuexpresso
 on:
   push:
-    branches: [ main ]
+    branches-ignore:
+    - '*'
+  pull_request:
 jobs:
   build:
     runs-on: ubuntu-latest
