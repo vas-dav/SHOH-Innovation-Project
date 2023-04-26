@@ -5,6 +5,7 @@
 #include <cr_section_macros.h>
 #include "ThreadCommon.h"
 #include "Master.h"
+#include "Rotary.h"
 
 
 int main(void)
@@ -17,20 +18,15 @@ int main(void)
   qmanager->createQueue(100,
                         sizeof(Event),
                         ThreadCommon::QueueManager::master_event_all);
-
   //Creating tasks
   manager->createTask(master_thread, "master",
-                     configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
-                     static_cast<void*>(qmanager));
+                      configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
+                      static_cast<void*>(qmanager));
+  manager->createTask(rotary_thread, "rotary",
+                      configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
+                      static_cast<void*>(qmanager));
   
-  //<Queue_test>
-  Event* e = new Event(Event::Rotary, 1);
-
-  qmanager->send<Event>(ThreadCommon::QueueManager::master_event_all, e, 1000);
-  //</Queue_test>
-
   // Start the real time kernel with preemption.
-  //FreeRTOS::Kernel::startScheduler();
   vTaskStartScheduler ();
 
   return 1;

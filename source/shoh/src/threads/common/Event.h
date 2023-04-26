@@ -47,6 +47,11 @@ public:
         return pos->second;
     }
 
+    void inline setDataOf(Event::EventType e, EventRawData data)
+    {
+        events[e] = data;
+    }
+
 private:
     std::map <Event::EventType, EventRawData> events;
 };

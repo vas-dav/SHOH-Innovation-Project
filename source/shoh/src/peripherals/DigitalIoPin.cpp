@@ -8,7 +8,7 @@
 #include "DigitalIoPin.h"
 
 DigitalIoPin::DigitalIoPin (int port, int pin, bool input, bool pullup,
-                            bool invert)
+                            bool invert, bool isr, IRQn_Type isr_index)
 {
   assert ((port <= UINT8_MAX_VALUE) && (pin <= UINT8_MAX_VALUE));
   _io._port = (uint8_t)port;
@@ -18,7 +18,12 @@ DigitalIoPin::DigitalIoPin (int port, int pin, bool input, bool pullup,
   _io._invert = invert;
   _io.IOCON_mode = IOCON_MODE_INACT;
   _io.IOCON_inv = IOCON_FUNC0;
-  setIoPin ();
+  if (isr){
+    _io.isr_i = isr_index;
+    setIsr();
+  } else {
+    setIoPin ();
+  }
 }
 
 DigitalIoPin::~DigitalIoPin ()
@@ -46,6 +51,52 @@ DigitalIoPin::setIoPin ()
                         (_io.IOCON_mode | _io.DigitalEn | _io.IOCON_inv));
   /**	False direction equals input */
   Chip_GPIO_SetPinDIR (LPC_GPIO, _io._port, _io._pin, direction);
+}
+
+void
+DigitalIoPin::setIsr ()
+{
+  bool direction = true;
+  if (_io._input)
+    {
+      direction = false;
+      _io.IOCON_mode = IOCON_MODE_PULLUP;
+      if (!_io._pullup)
+        {
+          _io.IOCON_mode = IOCON_MODE_PULLDOWN;
+        }
+      if (_io._invert)
+        {
+          _io.IOCON_inv = IOCON_INV_EN;
+        }
+    }
+	/* We'll use an optional IOCON filter (0) with a divider of 64 for the
+	   input pin to be used for PININT */
+	Chip_Clock_SetIOCONFiltClockDiv(0, 64);
+
+  Chip_IOCON_PinMuxSet (LPC_IOCON, _io._port, _io._pin,
+						(_io.IOCON_mode | _io.DigitalEn
+						| _io.IOCON_inv | IOCON_CLKDIV(0)
+						| IOCON_S_MODE(3)));
+  /**	False direction equals input */
+  Chip_GPIO_SetPinDIR (LPC_GPIO, _io._port, _io._pin, direction);
+
+  /* Enable PININT clock if it was not enabled before */
+  if ((LPC_SYSCTL->SYSAHBCLKCTRL & (1 << SYSCTL_CLOCK_PINT)) == 0)
+  {
+	Chip_Clock_EnablePeriphClock(SYSCTL_CLOCK_PINT);
+  }
+  /* Configure interrupt channel for the GPIO pin in SysCon block */
+	Chip_SYSCTL_SetPinInterrupt(_io.isr_i, _io._port, _io._pin);
+
+	/* Configure channel interrupt as edge sensitive and falling edge interrupt */
+	Chip_PININT_ClearIntStatus(LPC_PININT, PININTCH(_io.isr_i));
+	Chip_PININT_SetPinModeEdge(LPC_PININT, PININTCH(_io.isr_i));
+	Chip_PININT_EnableIntLow(LPC_PININT, PININTCH(_io.isr_i));
+
+	/* Enable interrupt in the NVIC */
+	NVIC_ClearPendingIRQ(_io.isr_i);
+	NVIC_EnableIRQ(_io.isr_i);
 }
 
 bool
