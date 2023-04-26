@@ -18,6 +18,13 @@
 
 namespace ThreadCommon
 {
+    enum RotaryAction 
+	{
+		Right,
+		Left,
+		Press,
+		Idle
+	};
     class ThreadManager
     {
         public:
