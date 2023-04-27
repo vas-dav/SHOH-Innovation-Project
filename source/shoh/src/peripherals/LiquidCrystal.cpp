@@ -1,21 +1,62 @@
 #include "LiquidCrystal.h"
-
-// Remove this when code will be reworked.
-#ifndef LiquidCrystal_NOT_FIXED
-// Remove this when code will be reworked.
-
-
 #include <cstring>
 #include "chip.h"
+#include "board.h"
 
 #define LOW 0
 #define HIGH 1
+#define MHz1 1000000
 
+/**
+ * @brief	Handle interrupt from 32-bit timer 0
+ * @return	Nothing
+ */
+void TIMER32_0_IRQHandler(void)
+{
+	if (Chip_TIMER_MatchPending(LPC_TIMER32_0, 1)) {
+		Chip_TIMER_ClearMatch(LPC_TIMER32_0, 1);
+	}
+}
 
-#if 0
+#if 1
 void delayMicroseconds(unsigned int us)
 {
-	// implement with RIT
+  /* Initialize 32-bit timer 0 clock */
+	Chip_TIMER_Init(LPC_TIMER32_0);
+
+  /* Timer setup for match and interrupt at TICKRATE_HZ */
+  Chip_TIMER_Reset(LPC_TIMER32_0);
+
+  /* Enable timer to generate interrupt when time matches */
+  Chip_TIMER_MatchEnableInt(LPC_TIMER32_0, 1);
+
+  /* Setup 32-bit timer's duration (32-bit match time) */
+  /* Once_per_microsecond * number_of_microseconds. */
+	Chip_TIMER_SetMatch(LPC_TIMER32_0, 1, (Chip_Clock_GetSystemClockRate() / MHz1 * us));
+
+  /* Setup timer to stop when match occurs */
+  Chip_TIMER_StopOnMatchEnable(LPC_TIMER32_0, 1);
+
+  /* Start timer */
+  Chip_TIMER_Enable(LPC_TIMER32_0);
+
+  /* Clear timer of any pending interrupts */
+	NVIC_ClearPendingIRQ(TIMER_32_0_IRQn);
+
+  /* Enable timer interrupt */
+	NVIC_EnableIRQ(TIMER_32_0_IRQn);
+
+  /* Wait for the interrupt to trigger */
+  while(Chip_TIMER_MatchPending(LPC_TIMER32_0, 1));
+
+  /*Disable the interrupt*/
+  Chip_TIMER_MatchDisableInt(LPC_TIMER32_0, 1);
+
+  /* Disable timer */
+  Chip_TIMER_Disable(LPC_TIMER32_0);
+
+  /* Deinitialise timer. */
+  Chip_TIMER_DeInit(LPC_TIMER32_0);
 }
 #else
 void delayMicroseconds(uint32_t delay)
@@ -291,7 +332,3 @@ void LiquidCrystal::write4bits(uint8_t value) {
 
   pulseEnable();
 }
-
-// Remove this when code will be reworked.
-#endif /* LiquidCrystal_NOT_FIXED */
-// Remove this when code will be reworked.
