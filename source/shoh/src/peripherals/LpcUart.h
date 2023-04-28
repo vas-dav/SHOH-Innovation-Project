@@ -9,7 +9,7 @@
 #define LPCUART_H_
 
 // Remove this when code will be reworked.
-#define LPCUART_NOT_FIXED
+//#define LPCUART_NOT_FIXED
 #ifndef LPCUART_NOT_FIXED
 // Remove this when code will be reworked.
 
@@ -26,13 +26,13 @@ struct LpcPinMap {
 };
 
 struct LpcUartConfig {
-	LPC_USART_T *pUART;
+	LPC_USARTN_T *pUART;
 	uint32_t speed;
 	uint32_t data;
 	bool rs485;
 	LpcPinMap tx;
 	LpcPinMap rx;
-	LpcPinMap rts; /* used as output enable if RS-485 mode is enabled */
+	LpcPinMap rts; /* used as output enable if RS-485 mode is enabled */ //shoh: Psst. Actually, not used anywhere.
 	LpcPinMap cts;
 };
 
@@ -58,7 +58,7 @@ public:
 
 	void isr(portBASE_TYPE *hpw); /* ISR handler. This will be called by the HW ISR handler. Do not call from application */
 private:
-	LPC_USART_T *uart;
+	LPC_USARTN_T *uart;
 	IRQn_Type irqn;
 	/* currently we support only fixed size ring buffers */
 	static const int UART_RB_SIZE = 128;
