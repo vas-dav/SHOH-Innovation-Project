@@ -26,6 +26,12 @@ public:
             SetPoint
         };
 
+    typedef struct _EventPair 
+    {
+        EventRawData rd;
+        EventType et;
+    } EventPair;
+
     Event(Event::EventType type, EventRawData data)
     {
         events.insert({type, data});

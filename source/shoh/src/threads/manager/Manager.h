@@ -10,6 +10,8 @@
 
 #include "ThreadCommon.h"
 #include "Event.h"
+#include "Counter.h"
+
 
 class Manager {
 public:
@@ -17,7 +19,13 @@ public:
 	virtual ~Manager();
 	void taskFunction();
 private:
+	Event::EventPair parseEvent(Event* e);
 	ThreadCommon::QueueManager* _qm;
+	Counter<EventRawData> set_point;
+
+	EventRawData int_temp;
+	EventRawData ext_temp;
+	EventRawData rotary_action;
 };
 
 void thread_manager(void* pvParams);
