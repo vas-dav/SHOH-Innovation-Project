@@ -17,7 +17,6 @@ public:
 	virtual ~Manager();
 	void taskFunction();
 private:
-	Event* message;
 	ThreadCommon::QueueManager* _qm;
 };
 

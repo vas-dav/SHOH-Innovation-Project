@@ -29,6 +29,10 @@ int main(void)
   qmanager->createQueue(100,
                         sizeof(Event),
                         ThreadCommon::QueueManager::master_event_all);
+  qmanager->createQueue(20,
+                        sizeof(Event),
+                        ThreadCommon::QueueManager::manager_event_master);
+  
   //Creating tasks
   manager->createTask(master_thread, "master",
                       configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,

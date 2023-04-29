@@ -21,9 +21,10 @@ Manager::~Manager()
 
 void Manager::taskFunction()
 {
+	Event data(Event::Null, 0);
 	for(;;)
 	{
-		vTaskDelay(1);
+		_qm->receive<Event>(ThreadCommon::QueueManager::manager_event_master, &data, portMAX_DELAY);
 	}
 }
 
