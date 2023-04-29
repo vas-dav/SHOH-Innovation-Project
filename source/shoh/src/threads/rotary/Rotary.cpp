@@ -64,7 +64,7 @@ void Rotary::taskFunction()
 	}
 }
 
-void rotary_thread(void* pvParams)
+void thread_rotary(void* pvParams)
 {
 	// Special case for ISR
 	QueueHandle_t rotary_isr_q = xQueueCreate(15, sizeof(char));

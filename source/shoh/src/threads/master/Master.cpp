@@ -41,7 +41,7 @@ void Master::taskFunction() {
 }
 
 
-void master_thread(void* pvParams) {
+void thread_master(void* pvParams) {
 	Master m(static_cast<ThreadCommon::QueueManager*>(pvParams));
 	m.taskFunction();
 }

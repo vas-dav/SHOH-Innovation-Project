@@ -32,15 +32,15 @@ int main(void)
   qmanager->createQueue(20,
                         sizeof(Event),
                         ThreadCommon::QueueManager::manager_event_master);
-  
+
   //Creating tasks
-  manager->createTask(master_thread, "master",
+  manager->createTask(thread_master, "master",
                       configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
                       static_cast<void*>(qmanager));
   manager->createTask(thread_manager, "manager",
                       configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
                       static_cast<void*>(qmanager));
-  manager->createTask(rotary_thread, "rotary",
+  manager->createTask(thread_rotary, "rotary",
                       configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
                       static_cast<void*>(qmanager));
   

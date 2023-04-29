@@ -25,6 +25,6 @@ private:
                                { 1, 8, true, false, false, true, PIN_INT2_IRQn} };
 };
 
-void rotary_thread(void* pvParams);
+void thread_rotary(void* pvParams);
 
 #endif /* THREADS_ROTARY_ROTARY_H_ */
