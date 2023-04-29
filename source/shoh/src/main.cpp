@@ -8,6 +8,7 @@
 #include "Rotary.h"
 #include "retarget_uart.h"
 #include "LiquidCrystal.h"
+#include "Manager.h"
 
 void lcd_starting();
 
@@ -30,6 +31,9 @@ int main(void)
                         ThreadCommon::QueueManager::master_event_all);
   //Creating tasks
   manager->createTask(master_thread, "master",
+                      configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
+                      static_cast<void*>(qmanager));
+  manager->createTask(thread_manager, "manager",
                       configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
                       static_cast<void*>(qmanager));
   manager->createTask(rotary_thread, "rotary",

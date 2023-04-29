@@ -51,6 +51,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/common}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/threads/rotary}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/threads/manager}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/peripherals}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.cpp.misc.dialect.4036734" name="Language standard" superClass="com.crt.advproject.cpp.misc.dialect" useByScannerDiscovery="true" value="com.crt.advproject.misc.dialect.cpp17" valueType="enumerated"/>
