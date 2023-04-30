@@ -11,11 +11,12 @@
 #include "ThreadCommon.h"
 #include "Event.h"
 #include "Counter.h"
+#include "Menu.h"
 
 
 class Manager {
 public:
-	Manager(ThreadCommon::QueueManager* qm);
+	Manager(ThreadCommon::QueueManager* qm, Menu * menu);
 	virtual ~Manager();
 	void taskFunction();
 private:
