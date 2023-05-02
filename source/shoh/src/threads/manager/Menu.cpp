@@ -63,10 +63,10 @@ void Menu::HandleEventPair (Event::EventPair *ep)
 	return;
 }
 
-void Menu::SetEvent (obj_pointer newevent)
+void Menu::SetState (p_state new_state)
 {
 	(this->*current) (MenuObjEvent (MenuObjEvent::eUnFocus));
-	current = newevent;
+	current = new_state;
 	(this->*current) (MenuObjEvent (MenuObjEvent::eFocus));
 }
 

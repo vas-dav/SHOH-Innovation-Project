@@ -14,7 +14,7 @@
 #define THREADS_MANAGER_MENU_H_
 
 class Menu;
-typedef void (Menu::*obj_pointer) (const MenuObjEvent &);
+typedef void (Menu::*p_state) (const MenuObjEvent &);
 
 class Menu
 {
@@ -25,9 +25,9 @@ public:
 
 private:
   /* Variables and objects */
-  obj_pointer current;
+  p_state current;
   /* Methods */
-  void SetEvent (obj_pointer newevent);
+  void SetState (p_state new_state);
   void HandleObj (const MenuObjEvent &event);
 };
 
