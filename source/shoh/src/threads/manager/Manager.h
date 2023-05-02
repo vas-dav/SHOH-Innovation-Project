@@ -23,6 +23,7 @@ private:
 	Event::EventPair parseEvent(Event* e);
 	ThreadCommon::QueueManager* _qm;
 	Counter<EventRawData> set_point;
+	Menu* _menu;
 
 	EventRawData int_temp;
 	EventRawData ext_temp;

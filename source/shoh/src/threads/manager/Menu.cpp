@@ -6,6 +6,7 @@
  */
 
 #include "Menu.h"
+#include <assert.h>
 
 Menu::Menu() 
 {
@@ -28,29 +29,34 @@ void Menu::HandleEventPair (Event::EventPair *ep)
             switch(static_cast<ThreadCommon::RotaryAction>(ep->rd)/*RawData*/)
             {
                 case ThreadCommon::RotaryAction::Right:
-                    this->HandleObj(MenuObjEvent::eRollClockWise);
+                    this->HandleObj(MenuObjEvent (MenuObjEvent::eRollClockWise));
                     break;
                 case ThreadCommon::RotaryAction::Left:
-                    this->HandleObj(MenuObjEvent::eRollCClockWise);
+                    this->HandleObj(MenuObjEvent (MenuObjEvent::eRollCClockWise));
                     break;
                 case ThreadCommon::RotaryAction::Press:
-                    this->HandleObj(MenuObjEvent::eClick);
+                    this->HandleObj(MenuObjEvent (MenuObjEvent::eClick));
                     break;
                 case ThreadCommon::RotaryAction::Idle:
                     /*I guess this is left for debugging purposes ;D*/
+                    this->HandleObj(MenuObjEvent (MenuObjEvent::eRefresh));
                     break;
-                case default:
+                default:
+                    assert(0);
                     /* Pretty damn bad code if reached here */
                     break;
             }
             break;
         case Event::InternalTemp:
             // TODO
+            assert(0);
             break;
         case Event::ExternalTemp:
             // TODO
+            assert(0);
             break;
-        case default:
+        default:
+            assert(0);
             /* Manager has big issues... */
             break;
     }

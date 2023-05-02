@@ -33,6 +33,7 @@ Event::EventPair Manager::parseEvent(Event* e)
 			return p; 
 		}
 	}
+	
 }
 
 void Manager::taskFunction()
