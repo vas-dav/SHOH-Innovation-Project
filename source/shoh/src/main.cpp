@@ -6,12 +6,17 @@
 #include "ThreadCommon.h"
 #include "Master.h"
 #include "Rotary.h"
-
+#include "retarget_uart.h"
 
 int main(void)
 {
   SystemCoreClockUpdate();
   Board_Init();
+
+  retarget_init();
+
+  printf("Hello there!\r\n");
+
   ThreadCommon::ThreadManager* manager = new ThreadCommon::ThreadManager;
   ThreadCommon::QueueManager* qmanager = new ThreadCommon::QueueManager;
   //Creating queues

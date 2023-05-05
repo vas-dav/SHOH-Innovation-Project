@@ -13,6 +13,10 @@
  * We don't have movable pins -> not needed.
  *
  * Muxing is like this:
+ * Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 14, (IOCON_FUNC4 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
+ * Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 13, (IOCON_FUNC4 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
+ * 
+ * USART0 (the only debug uart):
  * Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 18, (IOCON_FUNC1 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
  * Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 19, (IOCON_FUNC1 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
  */
@@ -90,7 +94,7 @@ LpcUart::LpcUart(const LpcUartConfig &cfg) {
 		 * UARTs.
 		 * */
 		/* Use main clock rate as base for UART baud rate divider */
-		Chip_Clock_SetUSARTNBaseClockRate(Chip_Clock_GetMainClockRate(), false);
+		Chip_Clock_SetUSARTNBaseClockRate(Chip_Clock_GetMainClockRate(), false); //(115200 * 256), false);
 	}
 
 	uart = nullptr; // set default value before checking which UART to configure
@@ -123,19 +127,19 @@ LpcUart::LpcUart(const LpcUartConfig &cfg) {
 
 
 	if(cfg.tx.port >= 0) {
-		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.tx.port, cfg.tx.pin, (IOCON_FUNC1 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
+		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.tx.port, cfg.tx.pin, (IOCON_FUNC4 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
 	}
 
 	if(cfg.rx.port >= 0) {
-		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.rx.port, cfg.rx.pin, (IOCON_FUNC1 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
+		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.rx.port, cfg.rx.pin, (IOCON_FUNC4 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
 	}
 
 	if(use_cts) {
-		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.cts.port, cfg.cts.pin, (IOCON_FUNC1 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
+		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.cts.port, cfg.cts.pin, (IOCON_FUNC4 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
 	}
 
 	if(use_rts) {
-		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.rts.port, cfg.rts.pin, (IOCON_FUNC1 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
+		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.rts.port, cfg.rts.pin, (IOCON_FUNC4 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
 	}
 
 	notify_rx = nullptr;

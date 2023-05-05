@@ -21,15 +21,19 @@ void Master::taskFunction() {
 		{
 			case ThreadCommon::RotaryAction::Right:
 				Board_LED_Set(ThreadCommon::RotaryAction::Right, LedState);
+				printf("Right\r\n");
 				break;
 			case ThreadCommon::RotaryAction::Left:
 				Board_LED_Set(ThreadCommon::RotaryAction::Left, LedState);
+				printf("Left\r\n");
 				break;
 			case ThreadCommon::RotaryAction::Press:
 				Board_LED_Set(ThreadCommon::RotaryAction::Press, LedState);
+				printf("Press\r\n");
 				break;
 			case ThreadCommon::RotaryAction::Idle:
 				Board_LED_Set(ThreadCommon::RotaryAction::Right, LedState);
+				printf("Idle\r\n");
 				break;
 		}
 		LedState = !LedState;
