@@ -1,41 +1,33 @@
 /*
- * LpcUart.h
+ * LpcDebugUart.h
  *
- *  Created on: 4.2.2019
- *      Author: keijo
+ *  Created on: 6.5.2023
  */
 
-#ifndef LPCUART_H_
-#define LPCUART_H_
+#ifndef LPCDEBUGUART_H_
+#define LPCDEBUGUART_H_
 
 #include "chip.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
 #include "Fmutex.h"
+#include "LpcUart.h"
 
-struct LpcPinMap {
-	int port; /* set to -1 to indicate unused pin */
-	int pin;  /* set to -1 to indicate unused pin  */
-};
-
-struct LpcUartConfig {
-	LPC_USARTN_T *pUART;
+struct LpcDebugUartConfig {
+	LPC_USART0_T *pUART;
 	uint32_t speed;
 	uint32_t data;
-	bool rs485;
 	LpcPinMap tx;
 	LpcPinMap rx;
-	LpcPinMap rts; /* used as output enable if RS-485 mode is enabled */ //shoh: Psst. Actually, not used anywhere.
-	LpcPinMap cts;
 };
 
 
-class LpcUart {
+class LpcDebugUart {
 public:
-	LpcUart(const LpcUartConfig &cfg);
-	LpcUart(const LpcUart &) = delete;
-	virtual ~LpcUart();
+	LpcDebugUart(const LpcDebugUartConfig &cfg);
+	LpcDebugUart(const LpcDebugUart &) = delete;
+	virtual ~LpcDebugUart();
 	int  free(); /* get amount of free space in transmit buffer */
 	int  peek(); /* get number of received characters in receive buffer */
 	int  write(char c);
@@ -52,7 +44,7 @@ public:
 
 	void isr(portBASE_TYPE *hpw); /* ISR handler. This will be called by the HW ISR handler. Do not call from application */
 private:
-	LPC_USARTN_T *uart;
+	LPC_USART0_T *uart;
 	IRQn_Type irqn;
 	/* currently we support only fixed size ring buffers */
 	static const int UART_RB_SIZE = 128;
@@ -61,7 +53,6 @@ private:
 	RINGBUFF_T rxring;
 	uint8_t rxbuff[UART_RB_SIZE];
 	uint8_t txbuff[UART_RB_SIZE];
-	static bool init; /* set when first UART is initialized. We have a global clock setting for all UARTSs */
 	TaskHandle_t notify_rx;
 	TaskHandle_t notify_tx;
 	void (*on_receive)(void); // callback for received data notifications

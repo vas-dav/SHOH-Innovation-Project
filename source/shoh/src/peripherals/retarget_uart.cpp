@@ -5,19 +5,19 @@
  *      Author: keijo
  */
 
-#include "LpcUart.h"
+#include "LpcDebugUart.h"
 
-static LpcUart *dbgu;
+static LpcDebugUart *dbgu;
 
 void retarget_init()
 {
 	LpcPinMap none = {-1, -1}; // unused pin has negative values in it
 	//Sadly, it seems that only USART0 is redirected to USB.
 	//It means that those are pins PIO0_18 and PIO0_19
-	LpcPinMap txpin = { 0, 14 }; // transmit pin that goes to debugger's UART->USB converter
-	LpcPinMap rxpin = { 0, 13 }; // receive pin that goes to debugger's UART->USB converter
-	LpcUartConfig cfg = { LPC_USART1, 115200, UARTN_CFG_DATALEN_8 | UARTN_CFG_PARITY_NONE | UARTN_CFG_STOPLEN_1, false, txpin, rxpin, none, none };
-	dbgu = new LpcUart(cfg);
+	LpcPinMap txpin = { 0, 19 }; // transmit pin that goes to debugger's UART->USB converter
+	LpcPinMap rxpin = { 0, 18 }; // receive pin that goes to debugger's UART->USB converter
+	LpcDebugUartConfig cfg = { LPC_USART0, 115200, (UART0_LCR_WLEN8 | UART0_LCR_SBS_1BIT), txpin, rxpin };
+	dbgu = new LpcDebugUart(cfg);
 }
 
 extern "C" {
