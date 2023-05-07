@@ -9,32 +9,31 @@
 #include <mutex>
 #include "LpcUart.h"
 
-// Remove this when code will be reworked.
-#ifndef LPCUART_NOT_FIXED
-// Remove this when code will be reworked.
+/* shoh: Important differences
+ * We don't have movable pins -> not needed.
+ *
+ * Muxing is like this:
+ * Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 14, (IOCON_FUNC4 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
+ * Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 13, (IOCON_FUNC4 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
+ * 
+ * USART0 (the only debug uart):
+ * Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 18, (IOCON_FUNC1 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
+ * Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 19, (IOCON_FUNC1 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
+ */
 
-
-static LpcUart *u0;
 static LpcUart *u1;
 static LpcUart *u2;
+static LpcUart *u3;
+static LpcUart *u4;
 
 extern "C" {
 /**
  * @brief	UART interrupt handler using ring buffers
+ * @par shoh: Unlike in lpc15xx, lpc11u68 has shared interrupts for 1 and 4, 2 and 3.
+ * shoh: Not sure how exactly it should be handled. UART0 is completely different compared to 1-4.
  * @return	Nothing
  */
-void UART0_IRQHandler(void)
-{
-	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
-
-	if(u0) {
-		u0->isr(&xHigherPriorityTaskWoken);
-	}
-
-	portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
-}
-
-void UART1_IRQHandler(void)
+void USART1_4_IRQHandler(void)
 {
 	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 
@@ -42,15 +41,23 @@ void UART1_IRQHandler(void)
 		u1->isr(&xHigherPriorityTaskWoken);
 	}
 
+	if(u4) {
+		u4->isr(&xHigherPriorityTaskWoken);
+	}
+
 	portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
 }
 
-void UART2_IRQHandler(void)
+void USART2_3_IRQHandler(void)
 {
 	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 
 	if(u2) {
 		u2->isr(&xHigherPriorityTaskWoken);
+	}
+
+	if(u3) {
+		u3->isr(&xHigherPriorityTaskWoken);
 	}
 
 	portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
@@ -61,26 +68,23 @@ void UART2_IRQHandler(void)
 
 void LpcUart::isr(portBASE_TYPE *hpw) {
 	// get interrupt status for notifications
-	uint32_t istat = Chip_UART_GetIntStatus(uart);
+	uint32_t istat = Chip_UARTN_GetIntStatus(uart);
 
 	// chip library is used to handle receive and transmit
-	Chip_UART_IRQRBHandler(uart, &rxring, &txring);
+	Chip_UARTN_IRQRBHandler(uart, &rxring, &txring);
 
 	// notify of the events handled
-	if(notify_rx && (istat & UART_STAT_RXRDY) ) vTaskNotifyGiveFromISR(notify_rx, hpw);
-	if(notify_tx && (istat & UART_STAT_TXRDY) ) vTaskNotifyGiveFromISR(notify_tx, hpw);
-	if(on_receive && (istat & UART_STAT_RXRDY) ) on_receive();
+	if(notify_rx && (istat & UARTN_STAT_RXRDY) ) vTaskNotifyGiveFromISR(notify_rx, hpw);
+	if(notify_tx && (istat & UARTN_STAT_TXRDY) ) vTaskNotifyGiveFromISR(notify_tx, hpw);
+	if(on_receive && (istat & UARTN_STAT_RXRDY) ) on_receive();
 }
 
 bool LpcUart::init = false;
 
 LpcUart::LpcUart(const LpcUartConfig &cfg) {
-	CHIP_SWM_PIN_MOVABLE_T tx;
-	CHIP_SWM_PIN_MOVABLE_T rx;
-	CHIP_SWM_PIN_MOVABLE_T cts;
-	CHIP_SWM_PIN_MOVABLE_T rts;
-	bool use_rts = (cfg.rts.port >= 0);
-	bool use_cts = (cfg.cts.port >= 0);
+	//shoh: removed handshakes and movable pins.
+	bool use_rts = false; //(cfg.rts.port >= 0);
+	bool use_cts = false; //(cfg.cts.port >= 0);
 
 	if(!init) {
 		init = true;
@@ -90,37 +94,30 @@ LpcUart::LpcUart(const LpcUartConfig &cfg) {
 		 * UARTs.
 		 * */
 		/* Use main clock rate as base for UART baud rate divider */
-		Chip_Clock_SetUARTBaseClockRate(Chip_Clock_GetMainClockRate(), false);
+		Chip_Clock_SetUSARTNBaseClockRate(Chip_Clock_GetMainClockRate(), false); //(115200 * 256), false);
 	}
 
 	uart = nullptr; // set default value before checking which UART to configure
 
-	if(cfg.pUART == LPC_USART0) {
-		if(u0) return; // already exists
-		else u0 = this;
-		tx = SWM_UART0_TXD_O;
-		rx = SWM_UART0_RXD_I;
-		rts = SWM_UART0_RTS_O;
-		cts = SWM_UART0_CTS_I;
-		irqn = UART0_IRQn;
-	}
-	else if(cfg.pUART == LPC_USART1) {
+	if(cfg.pUART == LPC_USART1) {
 		if(u1) return; // already exists
 		else u1 = this;
-		tx = SWM_UART1_TXD_O;
-		rx = SWM_UART1_RXD_I;
-		rts = SWM_UART1_RTS_O;
-		cts = SWM_UART1_CTS_I;
-		irqn = UART1_IRQn;
+		irqn = USART1_4_IRQn; //Shares interrupt with 4
 	}
 	else if(cfg.pUART == LPC_USART2) {
 		if(u2) return; // already exists
 		else u2 = this;
-		tx = SWM_UART2_TXD_O;
-		rx = SWM_UART2_RXD_I;
-		use_rts = false; // UART2 does not support handshakes
-		use_cts = false;
-		irqn = UART2_IRQn;
+		irqn = USART2_3_IRQn; //Shares interrupt with 3
+	}
+	else if(cfg.pUART == LPC_USART3) {
+		if(u3) return; // already exists
+		else u3 = this;
+		irqn = USART2_3_IRQn;
+	}
+	else if(cfg.pUART == LPC_USART4) {
+		if(u4) return; // already exists
+		else u4 = this;
+		irqn = USART1_4_IRQn;
 	}
 	else {
 		return;
@@ -130,32 +127,28 @@ LpcUart::LpcUart(const LpcUartConfig &cfg) {
 
 
 	if(cfg.tx.port >= 0) {
-		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.tx.port, cfg.tx.pin, (IOCON_MODE_INACT | IOCON_DIGMODE_EN));
-		Chip_SWM_MovablePortPinAssign(tx, cfg.tx.port, cfg.tx.pin);
+		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.tx.port, cfg.tx.pin, (IOCON_FUNC4 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
 	}
 
 	if(cfg.rx.port >= 0) {
-		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.rx.port, cfg.rx.pin, (IOCON_MODE_INACT | IOCON_DIGMODE_EN));
-		Chip_SWM_MovablePortPinAssign(rx, cfg.rx.port, cfg.rx.pin);
+		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.rx.port, cfg.rx.pin, (IOCON_FUNC4 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
 	}
 
 	if(use_cts) {
-		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.cts.port, cfg.cts.pin, (IOCON_MODE_INACT | IOCON_DIGMODE_EN));
-		Chip_SWM_MovablePortPinAssign(cts, cfg.cts.port, cfg.cts.pin);
+		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.cts.port, cfg.cts.pin, (IOCON_FUNC4 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
 	}
 
 	if(use_rts) {
-		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.rts.port, cfg.rts.pin, (IOCON_MODE_INACT | IOCON_DIGMODE_EN));
-		Chip_SWM_MovablePortPinAssign(rts, cfg.rts.port, cfg.rts.pin);
+		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.rts.port, cfg.rts.pin, (IOCON_FUNC4 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
 	}
 
 	notify_rx = nullptr;
 	notify_tx = nullptr;
 	on_receive = nullptr;
 	/* Setup UART */
-	Chip_UART_Init(uart);
-	Chip_UART_ConfigData(uart, cfg.data);
-	Chip_UART_SetBaud(uart, cfg.speed);
+	Chip_UARTN_Init(uart);
+	Chip_UARTN_ConfigData(uart, cfg.data);
+	Chip_UARTN_SetBaud(uart, cfg.speed);
 
 	if(use_rts && cfg.rs485) {
 		uart->CFG |= (1 << 20); // enable rs485 mode
@@ -163,8 +156,8 @@ LpcUart::LpcUart(const LpcUartConfig &cfg) {
 		uart->CFG |= (1 << 21);// driver enable polarity (active high)
 	}
 
-	Chip_UART_Enable(uart);
-	Chip_UART_TXEnable(uart);
+	Chip_UARTN_Enable(uart);
+	Chip_UARTN_TXEnable(uart);
 
 	/* Before using the ring buffers, initialize them using the ring
 	   buffer init function */
@@ -173,8 +166,8 @@ LpcUart::LpcUart(const LpcUartConfig &cfg) {
 
 
 	/* Enable receive data and line status interrupt */
-	Chip_UART_IntEnable(uart, UART_INTEN_RXRDY);
-	Chip_UART_IntDisable(uart, UART_INTEN_TXRDY);	/* May not be needed */
+	Chip_UARTN_IntEnable(uart, UARTN_INTEN_RXRDY);
+	Chip_UARTN_IntDisable(uart, UARTN_INTEN_TXRDY);	/* May not be needed */
 
 	NVIC_SetPriority(irqn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1);
 	/* Enable UART interrupt */
@@ -184,17 +177,20 @@ LpcUart::LpcUart(const LpcUartConfig &cfg) {
 LpcUart::~LpcUart() {
 	if(uart != nullptr) {
 		NVIC_DisableIRQ(irqn);
-		Chip_UART_IntDisable(uart, UART_INTEN_RXRDY);
-		Chip_UART_IntDisable(uart, UART_INTEN_TXRDY);
+		Chip_UARTN_IntDisable(uart, UARTN_INTEN_RXRDY);
+		Chip_UARTN_IntDisable(uart, UARTN_INTEN_TXRDY);
 
-		if(uart == LPC_USART0) {
-			u0 = nullptr;
-		}
-		else if(uart == LPC_USART1) {
+		if(uart == LPC_USART1) {
 			u1 = nullptr;
 		}
 		else if(uart == LPC_USART2) {
 			u2 = nullptr;
+		}
+		else if(uart == LPC_USART3) {
+			u3 = nullptr;
+		}
+		else if(uart == LPC_USART4) {
+			u4 = nullptr;
 		}
 	}
 }
@@ -236,7 +232,7 @@ int  LpcUart::read(char *buffer, int len)
 		notify_rx = nullptr;
 	}
 
-	return Chip_UART_ReadRB(uart, &rxring, buffer, len);
+	return Chip_UARTN_ReadRB(uart, &rxring, buffer, len);
 }
 
 
@@ -257,7 +253,7 @@ int  LpcUart::read(char *buffer, int len, TickType_t total_timeout, TickType_t i
 	}
 	notify_rx = nullptr;
 
-	return Chip_UART_ReadRB(uart, &rxring, buffer, len);;
+	return Chip_UARTN_ReadRB(uart, &rxring, buffer, len);;
 }
 
 int LpcUart::write(char c)
@@ -285,7 +281,7 @@ int LpcUart::write(const char *buffer, int len)
 		while(UART_RB_SIZE - RingBuffer_GetCount(&txring) < size) {
 			ulTaskNotifyTake( pdTRUE, portMAX_DELAY );
 		}
-		pos += Chip_UART_SendRB(uart, &txring, buffer+pos, size);
+		pos += Chip_UARTN_SendRB(uart, &txring, buffer+pos, size);
 	}
 	notify_tx = nullptr;
 
@@ -308,7 +304,7 @@ void LpcUart::speed(int bps)
 	std::lock_guard<Fmutex> lockw(write_mutex);
 	std::lock_guard<Fmutex> lockr(read_mutex);
 
-	Chip_UART_SetBaud(uart, bps);
+	Chip_UARTN_SetBaud(uart, bps);
 }
 
 bool LpcUart::txempty()
@@ -317,7 +313,3 @@ bool LpcUart::txempty()
 
 	return (RingBuffer_GetCount(&txring) == 0);
 }
-
-// Remove this when code will be reworked.
-#endif /* LPCUART_NOT_FIXED */
-// Remove this when code will be reworked.
