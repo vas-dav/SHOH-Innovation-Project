@@ -1,39 +1,71 @@
 #include "LiquidCrystal.h"
-
-// Remove this when code will be reworked.
-#ifndef LiquidCrystal_NOT_FIXED
-// Remove this when code will be reworked.
-
-
 #include <cstring>
 #include "chip.h"
+#include "board.h"
 
 #define LOW 0
 #define HIGH 1
+#define MHz1 1000000
 
+static bool match_flag = false;
 
-#if 0
+extern "C" {
+  /**
+   * @brief	Handle interrupt from 32-bit timer 0
+   * Sets match_flag to true when the match occurs.
+   * @return	Nothing
+   */
+  void TIMER32_0_IRQHandler(void)
+  {
+    if(Chip_TIMER_MatchPending(LPC_TIMER32_0, 0)) {
+      Chip_TIMER_ClearMatch(LPC_TIMER32_0, 0);
+      match_flag = true;
+    }
+  }
+}
+
 void delayMicroseconds(unsigned int us)
 {
-	// implement with RIT
-}
-#else
-void delayMicroseconds(uint32_t delay)
-{
-	static int init;
-	if(!init) {
-		// start core clock counter
-		CoreDebug->DEMCR |= 1 << 24;
-		DWT->CTRL |= 1;
-		init = 1;
-	}
+  /* Reset match flag */
+  match_flag = false;
 
-	uint32_t start = DWT->CYCCNT;
-	delay = delay * 72; // assuming 72MHz clock
-	while(DWT->CYCCNT - start < delay);
-}
+  /* Initialize 32-bit timer 0 clock */
+  Chip_TIMER_Init(LPC_TIMER32_0);
 
-#endif
+  /* Timer setup for match and interrupt at TICKRATE_HZ */
+  Chip_TIMER_Reset(LPC_TIMER32_0);
+
+  /* Enable timer to generate interrupt when time matches */
+  Chip_TIMER_MatchEnableInt(LPC_TIMER32_0, 0);
+
+  /* Setup 32-bit timer's duration (32-bit match time) */
+  /* Once_per_microsecond * number_of_microseconds. */
+  Chip_TIMER_SetMatch(LPC_TIMER32_0, 0, (Chip_Clock_GetSystemClockRate() / MHz1 * us));
+
+  /* Setup timer to stop when match occurs */
+  Chip_TIMER_StopOnMatchEnable(LPC_TIMER32_0, 0);
+
+  /* Start timer */
+  Chip_TIMER_Enable(LPC_TIMER32_0);
+
+  /* Clear timer of any pending interrupts */
+  NVIC_ClearPendingIRQ(TIMER_32_0_IRQn);
+
+  /* Enable timer interrupt */
+  NVIC_EnableIRQ(TIMER_32_0_IRQn);
+
+  /* Wait for the interrupt to trigger */
+  while(!match_flag);
+
+  /*Disable the interrupt*/
+  Chip_TIMER_MatchDisableInt(LPC_TIMER32_0, 0);
+
+  /* Disable timer */
+  Chip_TIMER_Disable(LPC_TIMER32_0);
+
+  /* Deinitialise timer. */
+  Chip_TIMER_DeInit(LPC_TIMER32_0);
+}
 
 // When the display powers up, it is configured as follows:
 //
@@ -57,7 +89,7 @@ void delayMicroseconds(uint32_t delay)
 
 
 LiquidCrystal::LiquidCrystal(DigitalIoPin *rs,  DigitalIoPin *enable,
-			     DigitalIoPin *d0, DigitalIoPin *d1, DigitalIoPin *d2, DigitalIoPin *d3)
+           DigitalIoPin *d0, DigitalIoPin *d1, DigitalIoPin *d2, DigitalIoPin *d3)
 {
   rs_pin = rs;
   enable_pin = enable;
@@ -291,7 +323,3 @@ void LiquidCrystal::write4bits(uint8_t value) {
 
   pulseEnable();
 }
-
-// Remove this when code will be reworked.
-#endif /* LiquidCrystal_NOT_FIXED */
-// Remove this when code will be reworked.

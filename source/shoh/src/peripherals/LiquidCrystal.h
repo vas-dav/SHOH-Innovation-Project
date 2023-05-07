@@ -1,11 +1,6 @@
 #ifndef LiquidCrystal_h
 #define LiquidCrystal_h
 
-// Remove this when code will be reworked.
-#define LiquidCrystal_NOT_FIXED
-#ifndef LiquidCrystal_NOT_FIXED
-// Remove this when code will be reworked.
-
 #include <cstddef>
 #include <string>
 #include "chip.h"
@@ -97,9 +92,5 @@ private:
 
   uint8_t _numlines,_currline;
 };
-
-// Remove this when code will be reworked.
-#endif /* LiquidCrystal_NOT_FIXED */
-// Remove this when code will be reworked.
 
 #endif /* LiquidCrystal_h */
