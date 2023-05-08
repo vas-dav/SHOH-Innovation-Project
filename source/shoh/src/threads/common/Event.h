@@ -23,7 +23,8 @@ public:
             Rotary,
             InternalTemp,
             ExternalTemp,
-            SetPoint
+            SetPoint,
+            NotifyUI
         };
 
     typedef struct _EventPair 
