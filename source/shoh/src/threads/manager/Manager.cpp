@@ -9,9 +9,8 @@
 #include "ThreadCommon.h"
 
 Manager::Manager(ThreadCommon::QueueManager* qm, Menu * menu)
-: _qm(qm), _menu(menu), set_point(0, 100, 5)
+: _qm(qm), _menu(menu)
 {
-	set_point.setCurrent(0);
 }
 
 Manager::~Manager() 
@@ -33,7 +32,7 @@ Event::EventPair Manager::parseEvent(Event* e)
 			return p; 
 		}
 	}
-	
+	return {ERROR_RETURN, Event::Null};
 }
 
 void Manager::taskFunction()

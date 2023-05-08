@@ -5,13 +5,13 @@
  *      Author: dave
  */
 
+#ifndef THREADS_MANAGER_MENU_H_
+#define THREADS_MANAGER_MENU_H_
+
 #include "Counter.h"
 #include "MenuObjEvent.h"
 #include "ThreadCommon.h"
 #include "Event.h"
-
-#ifndef THREADS_MANAGER_MENU_H_
-#define THREADS_MANAGER_MENU_H_
 
 class Menu;
 typedef void (Menu::*p_state) (const MenuObjEvent &);
@@ -26,9 +26,18 @@ public:
 private:
   /* Variables and objects */
   p_state current;
+  int ext_temp;
+  Counter<EventRawData> set_point;
+  const char main_text[64];
+  const char set_point_text[64];
+  /* States */
+  void sInitView(const MenuObjEvent &e);
+  void sMainView(const MenuObjEvent &e);
+  void sSetPointMod(const MenuObjEvent &e);
   /* Methods */
   void SetState (p_state new_state);
   void HandleObj (const MenuObjEvent &event);
+  void NotifyAndRefreshUI (const char *str);
 };
 
 #endif /* THREADS_MANAGER_MENU_H_ */
