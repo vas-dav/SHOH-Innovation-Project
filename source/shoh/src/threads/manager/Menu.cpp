@@ -82,6 +82,7 @@ void Menu::sInitView(const MenuObjEvent &e)
     case MenuObjEvent::eClick:
         break;
     case MenuObjEvent::eRefresh:
+        printf("NOTE: sInitView handled eRefresh.\n");
         this->SetState(&Menu::sMainView);
         break;
     default:
@@ -166,7 +167,7 @@ void Menu::HandleObj (const MenuObjEvent &event)
 void Menu::NotifyAndRefreshUI (const char *str)
 {
     //Send string on a queue to UI task.
-    UserInterface::InterfaceWithData ud = {UserInterface::LCD1, *str};
-    Event * p_e = new Event(Event::EventType::NotifyUI, *(reinterpret_cast<EventRawData*>(&ud)));
-    this->_qm->send<Event>(ThreadCommon::QueueManager::ui_event_manager, p_e, portMAX_DELAY);
+    UserInterface::InterfaceWithData ud = {UserInterface::LCD1, str};
+    //Event * p_e = new Event(Event::EventType::NotifyUI, *(reinterpret_cast<EventRawData*>(&ud)));
+    this->_qm->send<UserInterface::InterfaceWithData>(ThreadCommon::QueueManager::ui_event_manager, &ud, portMAX_DELAY);
 }

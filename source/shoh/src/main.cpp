@@ -30,7 +30,7 @@ int main(void)
                         sizeof(Event),
                         ThreadCommon::QueueManager::manager_event_master);
   qmanager->createQueue(20,
-                        sizeof(Event),
+                        sizeof(UserInterface::InterfaceWithData),
                         ThreadCommon::QueueManager::ui_event_manager);
 
   //Creating tasks

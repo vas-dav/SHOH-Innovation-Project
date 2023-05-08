@@ -23,7 +23,7 @@ public:
 
 	union InterfaceData
 	{
-		const char str[64];
+		const char* str;
 	};
 
 	struct InterfaceWithData
@@ -44,10 +44,7 @@ private:
 
 	//UIs
 	void handleLCD(LiquidCrystal *lcd, const char *str);
-	void initLCD(LiquidCrystal *lcd,
-				 DigitalIoPin *rs, DigitalIoPin *en,
-				 DigitalIoPin *d4, DigitalIoPin *d5,
-				 DigitalIoPin *d6, DigitalIoPin *d7);
+	void initLCD1();
 };
 
 void thread_user_interface(void* pvParams);

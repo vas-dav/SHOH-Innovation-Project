@@ -10,6 +10,7 @@
 UserInterface::UserInterface(ThreadCommon::QueueManager* qm) :
 _qm(qm), lcd1(nullptr)
 {
+	this->initLCD1();
 }
 
 UserInterface::~UserInterface()
@@ -26,19 +27,15 @@ UserInterface::~UserInterface()
 void UserInterface::taskFunction()
 {
 	Event data(Event::Null, 0);
-	//LCD1 init.
-	this->initLCD(this->lcd1, this->lcd1_rs, this->lcd1_en, this->lcd1_d4,
-				  this->lcd1_d5, this->lcd1_d6, this->lcd1_d7);
+	InterfaceWithData ui_with_data;
 
 	for (;;)
 	{
-		this->_qm->receive<Event>(ThreadCommon::QueueManager::ui_event_manager, &data, portMAX_DELAY);
+		this->_qm->receive<UserInterface::InterfaceWithData>(ThreadCommon::QueueManager::ui_event_manager, &ui_with_data, portMAX_DELAY);
 		//Don't mind the type, we care only about the raw_data.
-		EventRawData ed = data.getDataOf(Event::NotifyUI);
-		if(ed != ERROR_RETURN)
-			this->handleEvent(reinterpret_cast<UserInterface::InterfaceWithData*>(&ed));
-		else
-			printf("ERROR: [UserInterface::taskFunction] Event gave ERROR_RETURN data.");
+		//EventRawData ed = data.getDataOf(Event::NotifyUI);
+		//if(ed != ERROR_RETURN)
+		this->handleEvent(&ui_with_data);
 	}
 	
 }
@@ -52,7 +49,7 @@ void UserInterface::handleEvent(InterfaceWithData* ui_data)
 		break;
 	default:
 		//Should never happen.
-		printf("WARNING: [UserInterface::handleEvent] executed default case.");
+		printf("WARNING: [UserInterface::handleEvent] executed default case.\n");
 		break;
 	}
 }
@@ -74,17 +71,14 @@ void UserInterface::handleLCD(LiquidCrystal *lcd, const char *str)
 	}
 }
 
-void UserInterface::initLCD(LiquidCrystal *lcd,
-				 			DigitalIoPin *rs, DigitalIoPin *en,
-				 			DigitalIoPin *d4, DigitalIoPin *d5,
-				 			DigitalIoPin *d6, DigitalIoPin *d7)
+void UserInterface::initLCD1()
 {
-	rs = new DigitalIoPin(1, 9, false);
-	en = new DigitalIoPin(0, 14, false);
-	d4 = new DigitalIoPin(0, 13, false);
-	d5 = new DigitalIoPin(0, 12, false);
-	d6 = new DigitalIoPin(0, 23, false);
-	d7 = new DigitalIoPin(0, 11, false);
+	this->lcd1_rs = new DigitalIoPin(1, 9, false);
+	this->lcd1_en = new DigitalIoPin(0, 14, false);
+	this->lcd1_d4 = new DigitalIoPin(0, 13, false);
+	this->lcd1_d5 = new DigitalIoPin(0, 12, false);
+	this->lcd1_d6 = new DigitalIoPin(0, 23, false);
+	this->lcd1_d7 = new DigitalIoPin(0, 11, false);
 
 	//Fix Pin Muxing.
 	Chip_IOCON_PinMuxSet (LPC_IOCON, 1, 9, (IOCON_FUNC0 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
@@ -94,17 +88,18 @@ void UserInterface::initLCD(LiquidCrystal *lcd,
 	Chip_IOCON_PinMuxSet (LPC_IOCON, 0, 23, (IOCON_FUNC0 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
 	Chip_IOCON_PinMuxSet (LPC_IOCON, 0, 11, (IOCON_FUNC1 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
 
-	rs->write(false);
-	en->write(false);
-	d4->write(false);
-	d5->write(false);
-  	d6->write(false);
-  	d7->write(false);
+	this->lcd1_rs->write(false);
+	this->lcd1_en->write(false);
+	this->lcd1_d4->write(false);
+	this->lcd1_d5->write(false);
+  	this->lcd1_d6->write(false);
+  	this->lcd1_d7->write(false);
 	// LCD init.
-	lcd = new LiquidCrystal(rs, en, d4, d5, d6, d7);
+	this->lcd1 = new LiquidCrystal(this->lcd1_rs, this->lcd1_en, this->lcd1_d4,
+								   this->lcd1_d5, this->lcd1_d6, this->lcd1_d7);
 	// LCD configure display geometry.
-	lcd->begin(16, 2);
-	lcd->setCursor (0, 0);
+	this->lcd1->begin(16, 2);
+	this->lcd1->setCursor (0, 0);
 }
 
 void thread_user_interface(void* pvParams)
