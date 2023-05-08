@@ -104,6 +104,8 @@ LiquidCrystal::LiquidCrystal(DigitalIoPin *rs,  DigitalIoPin *enable,
   begin(16, 2); // default to 16x2 display
 }
 
+LiquidCrystal::~LiquidCrystal() {}
+
 void LiquidCrystal::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
   if (lines > 1) {
     _displayfunction |= LCD_2LINE;
