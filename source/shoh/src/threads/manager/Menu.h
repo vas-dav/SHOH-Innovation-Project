@@ -19,12 +19,13 @@ typedef void (Menu::*p_state) (const MenuObjEvent &);
 class Menu
 {
 public:
-  Menu ();
+  Menu (ThreadCommon::QueueManager* qm);
   virtual ~Menu ();
   void HandleEventPair (Event::EventPair *ep);
 
 private:
   /* Variables and objects */
+  ThreadCommon::QueueManager* _qm;
   p_state current;
   int ext_temp;
   Counter<EventRawData> set_point;

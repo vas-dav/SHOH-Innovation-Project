@@ -32,7 +32,7 @@ void UserInterface::taskFunction()
 
 	for (;;)
 	{
-		this->_qm->receive(ThreadCommon::QueueManager::ui_event_manager, &data, portMAX_DELAY);
+		this->_qm->receive<Event>(ThreadCommon::QueueManager::ui_event_manager, &data, portMAX_DELAY);
 		//Don't mind the type, we care only about the raw_data.
 		EventRawData ed = data.getDataOf(Event::NotifyUI);
 		if(ed != ERROR_RETURN)

@@ -7,8 +7,10 @@
 
 #include "Menu.h"
 #include <assert.h>
+#include "UserInterface.h"
 
-Menu::Menu(): current(&Menu::sInitView), set_point(0, 100, 1),
+Menu::Menu(ThreadCommon::QueueManager* qm): _qm(qm),
+current(&Menu::sInitView), set_point(0, 100, 1),
 main_text     ("CURRENT %2d      DESIRED %2d      "),
 set_point_text("CURRENT %2d      DESIRED[%2d]     ")
 {
@@ -164,4 +166,7 @@ void Menu::HandleObj (const MenuObjEvent &event)
 void Menu::NotifyAndRefreshUI (const char *str)
 {
     //Send string on a queue to UI task.
+    UserInterface::InterfaceWithData ud = {UserInterface::LCD1, *str};
+    Event * p_e = new Event(Event::EventType::NotifyUI, *(reinterpret_cast<EventRawData*>(&ud)));
+    this->_qm->send<Event>(ThreadCommon::QueueManager::ui_event_manager, p_e, portMAX_DELAY);
 }

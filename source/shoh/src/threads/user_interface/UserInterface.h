@@ -23,7 +23,7 @@ public:
 
 	union InterfaceData
 	{
-		char str[64];
+		const char str[64];
 	};
 
 	struct InterfaceWithData

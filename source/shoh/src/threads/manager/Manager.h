@@ -16,13 +16,13 @@
 
 class Manager {
 public:
-	Manager(ThreadCommon::QueueManager* qm, Menu * menu);
+	Manager(ThreadCommon::QueueManager* qm);
 	virtual ~Manager();
 	void taskFunction();
 private:
 	Event::EventPair parseEvent(Event* e);
 	ThreadCommon::QueueManager* _qm;
-	Menu* _menu;
+	Menu _menu;
 
 	EventRawData rotary_action;
 };

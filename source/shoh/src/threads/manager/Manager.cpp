@@ -8,8 +8,8 @@
 #include "Manager.h"
 #include "ThreadCommon.h"
 
-Manager::Manager(ThreadCommon::QueueManager* qm, Menu * menu)
-: _qm(qm), _menu(menu)
+Manager::Manager(ThreadCommon::QueueManager* qm)
+: _qm(qm), _menu{qm}
 {
 }
 
@@ -43,13 +43,12 @@ void Manager::taskFunction()
 	{
 		_qm->receive<Event>(ThreadCommon::QueueManager::manager_event_master, &data, portMAX_DELAY);
 		event_pair= this->parseEvent(&data);
-        _menu->HandleEventPair(&event_pair);
+        _menu.HandleEventPair(&event_pair);
 	}
 }
 
 void thread_manager(void* pvParams)
 {
-    Menu menu;
-	Manager m(static_cast<ThreadCommon::QueueManager*>(pvParams), &menu);
+	Manager m(static_cast<ThreadCommon::QueueManager*>(pvParams));
 	m.taskFunction();
 }
