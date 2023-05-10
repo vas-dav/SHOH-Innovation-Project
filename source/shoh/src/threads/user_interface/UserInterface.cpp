@@ -76,14 +76,6 @@ void UserInterface::initLCD1()
 	this->lcd1_d6 = new DigitalIoPin(0, 23, false);
 	this->lcd1_d7 = new DigitalIoPin(0, 11, false);
 
-	//Fix Pin Muxing.
-	Chip_IOCON_PinMuxSet (LPC_IOCON, 1, 9, (IOCON_FUNC0 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
-	Chip_IOCON_PinMuxSet (LPC_IOCON, 0, 14, (IOCON_FUNC1 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
-	Chip_IOCON_PinMuxSet (LPC_IOCON, 0, 13, (IOCON_FUNC1 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
-	Chip_IOCON_PinMuxSet (LPC_IOCON, 0, 12, (IOCON_FUNC1 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
-	Chip_IOCON_PinMuxSet (LPC_IOCON, 0, 23, (IOCON_FUNC0 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
-	Chip_IOCON_PinMuxSet (LPC_IOCON, 0, 11, (IOCON_FUNC1 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
-
 	this->lcd1_rs->write(false);
 	this->lcd1_en->write(false);
 	this->lcd1_d4->write(false);
