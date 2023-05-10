@@ -24,6 +24,8 @@ public:
 private:
 	Event* message;
 	ThreadCommon::QueueManager* _qm;
+	void HandleEventType(Event* e, Event::EventType type);
+	void DebugRotaryEvent(EventRawData data);
 };
 
 void thread_master(void* pvParams);
