@@ -23,6 +23,7 @@ typedef struct DigitalIOConfigStruct
   uint32_t IOCON_mode;
   uint32_t IOCON_inv;
   uint32_t DigitalEn;
+  uint32_t IOFunction;
   IRQn_Type isr_i;
 } DigitalIOConfigStruct;
 
