@@ -104,6 +104,8 @@ LiquidCrystal::LiquidCrystal(DigitalIoPin *rs,  DigitalIoPin *enable,
   begin(16, 2); // default to 16x2 display
 }
 
+LiquidCrystal::~LiquidCrystal() {}
+
 void LiquidCrystal::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
   if (lines > 1) {
     _displayfunction |= LCD_2LINE;
@@ -193,15 +195,17 @@ void LiquidCrystal::home()
 
 void LiquidCrystal::print(std::string const &s)
 {
-	print(s.c_str());
+  print(s.c_str());
 }
 
 void LiquidCrystal::print(const char *s)
 {
-	while(*s) {
-		write(*s);
-		++s;
-	}
+  for (uint8_t i = 0; *s != '\0' && i <= 1; i++) {
+    for (size_t q = 0; *s != '\0' && q < 16; q++, s++) {
+      this->setCursor(q, i); 
+      this->write(*s);
+    }
+  }
 }
 
 void LiquidCrystal::setCursor(uint8_t col, uint8_t row)

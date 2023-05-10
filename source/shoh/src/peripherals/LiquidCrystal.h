@@ -50,6 +50,8 @@ public:
   LiquidCrystal(DigitalIoPin *rs,  DigitalIoPin *enable,
 			    DigitalIoPin *d0, DigitalIoPin *d1, DigitalIoPin *d2, DigitalIoPin *d3);
 
+  virtual ~LiquidCrystal();
+
   void begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS);
 
   void clear();

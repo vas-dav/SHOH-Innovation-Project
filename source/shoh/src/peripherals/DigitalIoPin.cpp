@@ -18,6 +18,12 @@ DigitalIoPin::DigitalIoPin (int port, int pin, bool input, bool pullup,
   _io._invert = invert;
   _io.IOCON_mode = IOCON_MODE_INACT;
   _io.IOCON_inv = IOCON_FUNC0;
+  //Table 83 from UM10732-11u68.pdf
+  if(port == 0 && ((pin >= 10 && pin <= 15) || pin == 0))
+    _io.IOFunction = IOCON_FUNC1;
+  else
+    _io.IOFunction = IOCON_FUNC0;
+
   if (isr){
     _io.isr_i = isr_index;
     setIsr();
@@ -48,7 +54,7 @@ DigitalIoPin::setIoPin ()
         }
     }
   Chip_IOCON_PinMuxSet (LPC_IOCON, _io._port, _io._pin,
-                        (_io.IOCON_mode | _io.DigitalEn | _io.IOCON_inv));
+                        (_io.IOFunction | _io.IOCON_mode | _io.DigitalEn | _io.IOCON_inv));
   /**	False direction equals input */
   Chip_GPIO_SetPinDIR (LPC_GPIO, _io._port, _io._pin, direction);
 }
@@ -75,9 +81,9 @@ DigitalIoPin::setIsr ()
 	Chip_Clock_SetIOCONFiltClockDiv(0, 64);
 
   Chip_IOCON_PinMuxSet (LPC_IOCON, _io._port, _io._pin,
-						(_io.IOCON_mode | _io.DigitalEn
-						| _io.IOCON_inv | IOCON_CLKDIV(0)
-						| IOCON_S_MODE(3)));
+						(_io.IOFunction | _io.IOCON_mode
+						| _io.DigitalEn | _io.IOCON_inv
+						| IOCON_CLKDIV(0) | IOCON_S_MODE(3)));
   /**	False direction equals input */
   Chip_GPIO_SetPinDIR (LPC_GPIO, _io._port, _io._pin, direction);
 

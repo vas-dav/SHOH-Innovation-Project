@@ -26,7 +26,7 @@ private:
 	ThreadCommon::QueueManager* _qm;
 };
 
-void master_thread(void* pvParams);
+void thread_master(void* pvParams);
 
 
 #endif /* THREADS_MASTER_MASTER_H_ */

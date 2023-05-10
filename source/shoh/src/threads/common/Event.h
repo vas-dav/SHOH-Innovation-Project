@@ -23,8 +23,15 @@ public:
             Rotary,
             InternalTemp,
             ExternalTemp,
-            SetPoint
+            SetPoint,
+            NotifyUI
         };
+
+    typedef struct _EventPair 
+    {
+        EventRawData rd;
+        EventType et;
+    } EventPair;
 
     Event(Event::EventType type, EventRawData data)
     {
