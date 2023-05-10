@@ -195,15 +195,17 @@ void LiquidCrystal::home()
 
 void LiquidCrystal::print(std::string const &s)
 {
-	print(s.c_str());
+  print(s.c_str());
 }
 
 void LiquidCrystal::print(const char *s)
 {
-	while(*s) {
-		write(*s);
-		++s;
-	}
+  for (uint8_t i = 0; *s != '\0' && i <= 1; i++) {
+    for (size_t q = 0; *s != '\0' && q < 16; q++, s++) {
+      this->setCursor(q, i); 
+      this->write(*s);
+    }
+  }
 }
 
 void LiquidCrystal::setCursor(uint8_t col, uint8_t row)
