@@ -26,15 +26,11 @@ UserInterface::~UserInterface()
 
 void UserInterface::taskFunction()
 {
-	Event data(Event::Null, 0);
 	InterfaceWithData ui_with_data;
 
 	for (;;)
 	{
 		this->_qm->receive<UserInterface::InterfaceWithData>(ThreadCommon::QueueManager::ui_event_manager, &ui_with_data, portMAX_DELAY);
-		//Don't mind the type, we care only about the raw_data.
-		//EventRawData ed = data.getDataOf(Event::NotifyUI);
-		//if(ed != ERROR_RETURN)
 		this->handleEvent(&ui_with_data);
 	}
 	

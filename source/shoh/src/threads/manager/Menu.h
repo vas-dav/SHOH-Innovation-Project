@@ -27,7 +27,7 @@ private:
   /* Variables and objects */
   ThreadCommon::QueueManager* _qm;
   p_state current;
-  short ext_temp;
+  Counter<EventRawData> ext_temp;
   Counter<EventRawData> set_point;
   const char main_text[64];
   const char set_point_text[64];

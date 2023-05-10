@@ -10,11 +10,12 @@
 #include "UserInterface.h"
 
 Menu::Menu(ThreadCommon::QueueManager* qm): _qm(qm),
-current(&Menu::sInitView), set_point(0, 100, 1),
-main_text     ("CURRENT %2d      DESIRED %2d      "),
-set_point_text("CURRENT %2d      DESIRED[%2d]     ")
+current(&Menu::sInitView), ext_temp(-99, 99, 1), set_point(-99, 99, 1),
+main_text     ("CURRENT %3d     DESIRED %3d     "),
+set_point_text("CURRENT %3d     DESIRED[%3d]    ")
 {
 	this->SetState(&Menu::sInitView);
+    ext_temp.setCurrent(0);
     set_point.setCurrent(0);
 }
 
@@ -51,8 +52,8 @@ void Menu::HandleEventPair (Event::EventPair *ep)
             }
             break;
         case Event::ExternalTemp:
-            //Change ExternalTemp value.
-            this->ext_temp = ep->rd;
+            //Change ExternalTemp value. -99 <= ext_temp <= 99
+            this->ext_temp.setCurrent(ep->rd);
             //Refresh the menu screen.
             this->HandleObj(MenuObjEvent (MenuObjEvent::eRefresh));
             break;
@@ -73,6 +74,7 @@ void Menu::sInitView(const MenuObjEvent &e)
         this->NotifyAndRefreshUI("Loading...");
         break;
     case MenuObjEvent::eUnFocus:
+        printf("NOTE: leave sInitView\n");
         this->NotifyAndRefreshUI("");
         break;
     case MenuObjEvent::eRollClockWise:
@@ -80,6 +82,7 @@ void Menu::sInitView(const MenuObjEvent &e)
     case MenuObjEvent::eRollCClockWise:
         break;
     case MenuObjEvent::eClick:
+        this->SetState(&Menu::sMainView);
         break;
     case MenuObjEvent::eRefresh:
         printf("NOTE: sInitView handled eRefresh.\n");
@@ -92,11 +95,12 @@ void Menu::sInitView(const MenuObjEvent &e)
 
 void Menu::sMainView(const MenuObjEvent &e)
 {
-    char screen_text[64];
+    static char screen_text[64];
     switch (e.type)
     {
     case MenuObjEvent::eFocus: 
-        sprintf(screen_text, main_text, this->ext_temp, this->set_point.getCurrent());
+        sprintf(screen_text, main_text, this->ext_temp.getCurrent(),
+                                        this->set_point.getCurrent());
         this->NotifyAndRefreshUI(screen_text);
         break;
     case MenuObjEvent::eUnFocus:
@@ -110,7 +114,8 @@ void Menu::sMainView(const MenuObjEvent &e)
         this->SetState(&Menu::sSetPointMod);
         break;
     case MenuObjEvent::eRefresh:
-        sprintf(screen_text, main_text, this->ext_temp, this->set_point.getCurrent());
+        sprintf(screen_text, main_text, this->ext_temp.getCurrent(),
+                                        this->set_point.getCurrent());
         this->NotifyAndRefreshUI(screen_text);
         break;
     default:
@@ -120,11 +125,12 @@ void Menu::sMainView(const MenuObjEvent &e)
 
 void Menu::sSetPointMod(const MenuObjEvent &e)
 {
-    char screen_text[64];
+    static char screen_text[64];
     switch (e.type)
     {
     case MenuObjEvent::eFocus:
-        sprintf(screen_text, set_point_text, this->ext_temp, this->set_point.getCurrent());
+        sprintf(screen_text, set_point_text, this->ext_temp.getCurrent(),
+                                             this->set_point.getCurrent());
         this->NotifyAndRefreshUI(screen_text);
         break;
     case MenuObjEvent::eUnFocus:
@@ -132,19 +138,22 @@ void Menu::sSetPointMod(const MenuObjEvent &e)
         break;
     case MenuObjEvent::eRollClockWise:
         set_point.inc();
-        sprintf(screen_text, set_point_text, this->ext_temp, this->set_point.getCurrent());
+        sprintf(screen_text, set_point_text, this->ext_temp.getCurrent(),
+                                             this->set_point.getCurrent());
         this->NotifyAndRefreshUI(screen_text);
         break;
     case MenuObjEvent::eRollCClockWise:
         set_point.dec();
-        sprintf(screen_text, set_point_text, this->ext_temp, this->set_point.getCurrent());
+        sprintf(screen_text, set_point_text, this->ext_temp.getCurrent(),
+                                             this->set_point.getCurrent());
         this->NotifyAndRefreshUI(screen_text);
         break;
     case MenuObjEvent::eClick:
         this->SetState(&Menu::sMainView);
         break;
     case MenuObjEvent::eRefresh:
-        sprintf(screen_text, set_point_text, this->ext_temp, this->set_point.getCurrent());
+        sprintf(screen_text, set_point_text, this->ext_temp.getCurrent(),
+                                             this->set_point.getCurrent());
         this->NotifyAndRefreshUI(screen_text);
         break;
     default:
@@ -168,6 +177,6 @@ void Menu::NotifyAndRefreshUI (const char *str)
 {
     //Send string on a queue to UI task.
     UserInterface::InterfaceWithData ud = {UserInterface::LCD1, str};
-    //Event * p_e = new Event(Event::EventType::NotifyUI, *(reinterpret_cast<EventRawData*>(&ud)));
-    this->_qm->send<UserInterface::InterfaceWithData>(ThreadCommon::QueueManager::ui_event_manager, &ud, portMAX_DELAY);
+    this->_qm->send<UserInterface::InterfaceWithData>(
+                    ThreadCommon::QueueManager::ui_event_manager, &ud, portMAX_DELAY);
 }
