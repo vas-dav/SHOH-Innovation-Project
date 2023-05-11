@@ -7,6 +7,14 @@
 
 #include "Master.h"
 
+static const char* rotary_direction[] = 
+{
+	"Right",
+	"Left",
+	"Press",
+	"Idle"
+};
+
 Master::Master(ThreadCommon::QueueManager* qm) : _qm(qm)
 {
 
@@ -21,7 +29,6 @@ void Master::HandleEventType(Event* e, Event::EventType type)
 		case Event::Rotary:
 			//Comes from rotary, goes to manager
 			_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
-			DebugRotaryEvent(e->getDataOf(Event::Rotary));
 			break;
 		case Event::InternalTemp:
 			// TODO remove (deprecated)
@@ -39,31 +46,6 @@ void Master::HandleEventType(Event* e, Event::EventType type)
 			assert(0);
 			break;
 	}
-}
-
-void Master::DebugRotaryEvent(EventRawData e_data)
-{
-	bool LedState = true;
-	switch(e_data)
-		{
-			case ThreadCommon::RotaryAction::Right:
-				Board_LED_Set(ThreadCommon::RotaryAction::Right, LedState);
-				printf("Right\r\n");
-				break;
-			case ThreadCommon::RotaryAction::Left:
-				Board_LED_Set(ThreadCommon::RotaryAction::Left, LedState);
-				printf("Left\r\n");
-				break;
-			case ThreadCommon::RotaryAction::Press:
-				Board_LED_Set(ThreadCommon::RotaryAction::Press, LedState);
-				printf("Press\r\n");
-				break;
-			case ThreadCommon::RotaryAction::Idle:
-				//Board_LED_Set(ThreadCommon::RotaryAction::Right, LedState);
-				printf("Idle\r\n");
-				break;
-		}
-		LedState = !LedState;
 }
 
 void Master::taskFunction() {
