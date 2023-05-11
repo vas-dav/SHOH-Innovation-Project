@@ -10,19 +10,22 @@
 #include "Rotary.h"
 #include "Manager.h"
 #include "UserInterface.h"
+#include "Log.h"
+
 
 int main(void)
 {
+  LOG_INFO("Starting system init");
   SystemCoreClockUpdate();
   Board_Init();
 
   retarget_init();
 
-  printf("Hello there!\r\n");
+  LOG_INFO("System init done");
 
   ThreadCommon::ThreadManager* manager = new ThreadCommon::ThreadManager;
   ThreadCommon::QueueManager* qmanager = new ThreadCommon::QueueManager;
-  //Creating queues
+  LOG_INFO("Creating queues");
   qmanager->createQueue(100,
                         sizeof(Event),
                         ThreadCommon::QueueManager::master_event_all);
@@ -33,7 +36,7 @@ int main(void)
                         sizeof(UserInterface::InterfaceWithData),
                         ThreadCommon::QueueManager::ui_event_manager);
 
-  //Creating tasks
+  LOG_INFO("Creating tasks");
   manager->createTask(thread_master, "master",
                       configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
                       static_cast<void*>(qmanager));
@@ -47,7 +50,7 @@ int main(void)
                       configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
                       static_cast<void*>(qmanager));
   
-  // Start the real time kernel with preemption.
+  LOG_INFO("Start the real time kernel with preemption");
   vTaskStartScheduler ();
 
   return 1;
