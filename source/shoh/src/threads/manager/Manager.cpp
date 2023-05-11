@@ -7,15 +7,17 @@
 
 #include "Manager.h"
 #include "ThreadCommon.h"
+#include "Log.h"
 
 Manager::Manager(ThreadCommon::QueueManager* qm)
 : _qm(qm), _menu{qm}
 {
+	LOG_DEBUG("Creating Manager");
 }
 
 Manager::~Manager() 
 {
-	// TODO Auto-generated destructor stub
+	LOG_ERROR("Deleting Manager");
 }
 
 Event::EventPair Manager::parseEvent(Event* e)
@@ -32,6 +34,7 @@ Event::EventPair Manager::parseEvent(Event* e)
 			return p; 
 		}
 	}
+	LOG_WARNING("Event is empty");
 	return {ERROR_RETURN, Event::Null};
 }
 
