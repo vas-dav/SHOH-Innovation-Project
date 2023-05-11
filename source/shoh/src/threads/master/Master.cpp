@@ -32,7 +32,8 @@ void Master::HandleEventType(Event* e, Event::EventType type)
 			_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
 			break;
 		case Event::SetPoint:
-			//TODO comes from manager, goes to relay 
+			//Comes from manager, goes to relay 
+			_qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
 			break;
 		default:
 			assert(0);
