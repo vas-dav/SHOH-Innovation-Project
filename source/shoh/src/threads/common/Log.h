@@ -6,6 +6,13 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+/*
+    This simlpe logging framework is dependant
+    on std lib's multithread support, thus
+    if needed on different platforms, please
+    wrap it with mutexes.
+*/
+
 /* ================= Settings ================== */
 #define LOG_COLORED_OUTPUT
 #define HIGH_PRIORITY_DEBUG
