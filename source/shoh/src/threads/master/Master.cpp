@@ -19,6 +19,7 @@ void Master::HandleEventType(Event* e, Event::EventType type)
 		case Event::Null:
 			break;
 		case Event::Rotary:
+			//Comes from rotary, goes to manager
 			_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
 			DebugRotaryEvent(e->getDataOf(Event::Rotary));
 			break;
@@ -26,7 +27,9 @@ void Master::HandleEventType(Event* e, Event::EventType type)
 			// TODO remove (deprecated)
 			break;
 		case Event::ExternalTemp:
-			//TODO comes from sensors, goes to relay & manager
+			//Comes from sensors, goes to relay & manager
+			_qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
+			_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
 			break;
 		case Event::SetPoint:
 			//TODO comes from manager, goes to relay 
