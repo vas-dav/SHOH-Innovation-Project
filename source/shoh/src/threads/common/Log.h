@@ -7,9 +7,9 @@
 #include <stdio.h>
 
 /* ================= Settings ================== */
-#define LOG_DEBUGGING_E
 #define LOG_COLORED_OUTPUT
 #define HIGH_PRIORITY_DEBUG
+#define LOG_DEBUG_MESSAGES 1
 /* ================= Settings ================== */
 
 // internal debug defines
@@ -51,7 +51,7 @@ static void create_log_line(const char * _status,
     va_end(args);
     char buffer [LOG_BUFFER_MAX_CAP] = {0};
     int buffer_len = snprintf(buffer, LOG_BUFFER_MAX_CAP,
-                             "[%s] [File: %s] [Line: %ld] %.*s\n",
+                             "[%s] [File: %s] [Line: %ld] %.*s",
                              _status,
                              _location,
                              _line,
@@ -69,9 +69,8 @@ static void create_log_line(const char * _status,
 
 #define LOG_ERROR(fmt, ...)                                       \
     create_log_line(C_ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__);  \
-    exit(1);                                                            \
 
-#ifdef LOG_DEBUGGING_E
+#if LOG_DEBUG_MESSAGES
 #define LOG_DEBUG(fmt, ...)                                        \
     create_log_line(C_INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__);  \
 #else
