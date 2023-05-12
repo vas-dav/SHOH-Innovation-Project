@@ -9,6 +9,7 @@
 #include "Event.h"
 #include "Log.h"
 
+// TODO Remove en pins
 RelayDevice::RelayDevice(uint8_t en_pin, 
 						 uint8_t en_port, 
 						 uint8_t pha_pin, 
@@ -42,7 +43,31 @@ void Relay::taskFunction()
 	for(;;)
 	{
 		_qm->receive<Event>(ThreadCommon::QueueManager::relay_event_master, &data, portMAX_DELAY);
+		parseEvent(&data);
 	}
+}
+
+void Relay::parseEvent(Event* d)
+{
+	for (uint8_t i = Event::ExternalTemp; i <= Event::SetPoint; i++)
+		{
+			EventRawData rd = data.getDataOf(i);
+			if(rd == ERROR_RETURN)
+			{
+				continue;
+			}
+			switch(i /* EventType */)
+			{
+				case Event::ExternalTemp:
+					ext_temp = rd;
+					break;
+				case Event::SetPoint:
+					setpoint = rd;
+				default:
+					assert(0);
+			}
+		
+		}
 }
 
 void thread_relay(void * pvParams)

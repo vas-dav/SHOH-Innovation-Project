@@ -10,6 +10,7 @@
 
 #include "ThreadCommon.h"
 #include "DigitalIoPin.h"
+#include "Counter.h"
 
 class RelayDevice {
 	public:
@@ -33,6 +34,9 @@ private:
 	ThreadCommon::QueueManager* _qm;
 	RelayDevice relays [2] = {{0, 23, 0, 24, 0},
 							  {0, 25, 0, 26, 1}};
+
+	void parseEvent(Event * d);
+	int8_t setpoint, ext_temp;
 };
 
 void thread_relay(void * pvParams);
