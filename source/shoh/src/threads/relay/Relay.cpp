@@ -10,14 +10,11 @@
 #include "Log.h"
 
 // TODO Remove en pins
-RelayDevice::RelayDevice(uint8_t en_pin, 
-						 uint8_t en_port, 
-						 uint8_t pha_pin, 
+RelayDevice::RelayDevice(uint8_t pha_pin, 
 						 uint8_t pha_port, 
 						 uint8_t relay_device_index
 						 )
 {
-	en = new DigitalIoPin(en_pin, en_port, false);
 	pha = new DigitalIoPin(pha_pin, pha_port, false);
 	LOG_DEBUG("Creating RelayDevice");
 }
