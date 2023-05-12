@@ -46,8 +46,10 @@ extern QueueHandle_t logging_queue;
         xQueueSend(logging_queue, (void*)message, portMAX_DELAY);  \
     }
 
-static void create_log_line(const char * _status,
+static void create_log_line(const size_t _timestamp,
+                            const char * _status,
                             const char * _location,
+                            const char * _func,
                             const size_t _line,
                             const char * _fmt, ...)
 {
@@ -58,9 +60,11 @@ static void create_log_line(const char * _status,
     va_end(args);
     char buffer [LOG_BUFFER_MAX_CAP] = {0};
     int buffer_len = snprintf(buffer, LOG_BUFFER_MAX_CAP,
-                             "[%s] [File: %s] [Line: %d] %.*s",
+                             "[%zu]:[%s] In [File: %s] [Func: %s] [Line: %zu]\r\n %.*s",
+                             _timestamp,
                              _status,
                              _location,
+                             _func,
                              _line,
                              message_len,
                              message);
@@ -68,18 +72,18 @@ static void create_log_line(const char * _status,
     
 }
 
-#define LOG_INFO(fmt, ...)                                        \
-    create_log_line(C_INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
+#define LOG_INFO( fmt, ...)                                        \
+    create_log_line(LPC_SCT1->COUNT_U, C_INFO, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__);
 
 #define LOG_WARNING(fmt, ...)                                        \
-    create_log_line(C_WARN, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
+    create_log_line(LPC_SCT1->COUNT_U, C_WARN, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__);
 
 #define LOG_ERROR(fmt, ...)                                       \
-    create_log_line(C_ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
+    create_log_line(LPC_SCT1->COUNT_U, C_ERROR, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__);
 
 #if LOG_DEBUG_MESSAGES
 #define LOG_DEBUG(fmt, ...)                                        \
-    create_log_line(C_DEBUG, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
+    create_log_line(LPC_SCT1->COUNT_U, C_DEBUG, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__);
 #else
 #define LOG_DEBUG(fmt, ...)
 #endif
