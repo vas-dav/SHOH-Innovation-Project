@@ -45,6 +45,7 @@ public:
 	virtual ~Relay();
 	void taskFunction();
 	void setPowerMode(PowerMode pm);
+	void utilizeEventData();
 private:
 	ThreadCommon::QueueManager* _qm;
 	RelayDevice relays [2] = {{0, 24, 0},

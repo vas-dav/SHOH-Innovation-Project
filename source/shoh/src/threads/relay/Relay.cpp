@@ -83,6 +83,7 @@ void Relay::taskFunction()
 	{
 		_qm->receive<Event>(ThreadCommon::QueueManager::relay_event_master, &data, portMAX_DELAY);
 		parseEvent(&data);
+		utilizeEventData();
 	}
 }
 
@@ -109,6 +110,37 @@ void Relay::parseEvent(Event* d)
 			}
 		
 		}
+}
+
+void Relay::utilizeEventData()
+{
+    PowerMode pm = POWER_0;
+    /* If setpoint is lower than ext_temp,
+	 * none of below checks will pass and function
+	 * shall turn OFF the heater.
+	 * When setpoint is always higher than ext_temp,
+     * we can use up to three stages determine how 
+	 * powerful the output of the signal should be.
+     */
+    int8_t diff = setpoint - ext_temp;
+
+    if (diff >= 10)
+    {
+        pm = POWER_3;
+    }
+
+    if (diff >= 5)
+    {
+        pm = POWER_2;
+    }
+
+    if (diff >= 1)
+    {
+        pm = POWER_1;
+    }
+
+    setPowerMode(pm);
+    return;
 }
 
 void thread_relay(void * pvParams)
