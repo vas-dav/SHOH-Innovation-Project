@@ -8,6 +8,7 @@
 #include "Rotary.h"
 #include "board.h"
 #include "queue.h"
+#include "Log.h"
 
 static QueueHandle_t * p_rotary_isr_q;
 
@@ -20,6 +21,10 @@ extern "C"
 	portBASE_TYPE xHigherPriorityWoken = pdFALSE;
 	uint8_t data = ThreadCommon::RotaryAction::Right;
 	xQueueSendFromISR (*p_rotary_isr_q, &data,  &xHigherPriorityWoken);
+	if(!xHigherPriorityWoken)
+	{
+		LOG_WARNING("[PIN_INT0_IRQn] portEND_SWITCHING_ISR called with False value");
+	}
 	portEND_SWITCHING_ISR(xHigherPriorityWoken);
   }
 
@@ -30,6 +35,10 @@ extern "C"
 	portBASE_TYPE xHigherPriorityWoken = pdFALSE;
 	uint8_t data = ThreadCommon::RotaryAction::Left;
 	xQueueSendFromISR (*p_rotary_isr_q, &data,  &xHigherPriorityWoken);
+	if(!xHigherPriorityWoken)
+	{
+		LOG_WARNING("[PIN_INT1_IRQn] portEND_SWITCHING_ISR called with False value");
+	}
 	portEND_SWITCHING_ISR(xHigherPriorityWoken);
   }
 
@@ -40,16 +49,23 @@ extern "C"
 	portBASE_TYPE xHigherPriorityWoken = pdFALSE;
 	uint8_t data = ThreadCommon::RotaryAction::Press;
 	xQueueSendFromISR (*p_rotary_isr_q, &data,  &xHigherPriorityWoken);
+	if(!xHigherPriorityWoken)
+	{
+		LOG_WARNING("[PIN_INT2_IRQn] portEND_SWITCHING_ISR called with False value");
+	}
 	portEND_SWITCHING_ISR(xHigherPriorityWoken);
   }
 }
 
 Rotary::Rotary(ThreadCommon::QueueManager* qm) : _qm(qm) 
 {
-
+	LOG_DEBUG("Creating Rotary");
 }
 
-Rotary::~Rotary() {}
+Rotary::~Rotary() 
+{
+	LOG_ERROR("Deleting Rotary");
+}
 
 void Rotary::taskFunction()
 {
@@ -70,6 +86,7 @@ void thread_rotary(void* pvParams)
 	QueueHandle_t rotary_isr_q = xQueueCreate(15, sizeof(char));
 	p_rotary_isr_q = &rotary_isr_q;
 
-	Rotary r(static_cast<ThreadCommon::QueueManager*>(pvParams));
+	ThreadCommon::CommonManagers * manager = static_cast<ThreadCommon::CommonManagers*>(pvParams);
+	Rotary r(manager->qm);
 	r.taskFunction();
 }

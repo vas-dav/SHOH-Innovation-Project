@@ -53,6 +53,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/user_interface}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/threads/rotary}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/threads/manager}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/threads/logging}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/peripherals}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.cpp.misc.dialect.4036734" name="Language standard" superClass="com.crt.advproject.cpp.misc.dialect" useByScannerDiscovery="true" value="com.crt.advproject.misc.dialect.cpp17" valueType="enumerated"/>
@@ -85,6 +86,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/common}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/user_interface}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/logging}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/peripherals}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.c.misc.dialect.82852045" name="Language standard" superClass="com.crt.advproject.c.misc.dialect" useByScannerDiscovery="true" value="com.crt.advproject.misc.dialect.c17" valueType="enumerated"/>
@@ -105,6 +107,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/common}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/user_interface}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/logging}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/peripherals}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1836378919" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
@@ -255,6 +258,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/FreeRTOSCPP}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/common}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/user_interface}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/logging}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1117166373" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 								<inputType id="com.crt.advproject.assembler.input.2071009798" name="Additional Assembly Source Files" superClass="com.crt.advproject.assembler.input"/>

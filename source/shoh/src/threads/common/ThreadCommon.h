@@ -18,6 +18,7 @@
 
 namespace ThreadCommon
 {
+
     enum RotaryAction 
 	{
 		Right,
@@ -45,7 +46,8 @@ namespace ThreadCommon
                 master_event_all,
                 relay_event_master,
                 manager_event_master,
-                ui_event_manager
+                ui_event_manager,
+                logging_message_all
             };
             QueueManager();
             ~QueueManager() = default;
@@ -70,14 +72,11 @@ namespace ThreadCommon
             std::map <Queue_id, QueueHandle_t> queues;
     };
 
-    /* global variables */
-    /* 'receiver'_'what'_'sender'_q */
-    /*
-    extern QueueHandle_t master_event_all_q;
-    extern QueueHandle_t relay_event_master_q;
-    extern QueueHandle_t manager_event_master_q;
-    extern QueueHandle_t ui_event_manager_q;
-    */
+    typedef struct _CommonManagers
+    {
+        ThreadManager * tm;
+        QueueManager * qm;
+    } CommonManagers;
 }
 
 #endif /*__THREAD_COMMON_H_*/

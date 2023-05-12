@@ -6,6 +6,7 @@
  */
 
 #include "ThreadCommon.h"
+#include "Log.h"
 
 ThreadCommon::QueueManager::QueueManager() {}
 

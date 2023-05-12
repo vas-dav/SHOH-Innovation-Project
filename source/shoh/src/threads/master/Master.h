@@ -10,6 +10,8 @@
 
 #include "chip.h"
 #include "board.h"
+#include "FreeRTOS.h"
+#include "task.h"
 #include "ThreadCommon.h"
 #include "Event.h"
 #include "task.h"

@@ -5,16 +5,19 @@
  */
 
 #include "UserInterface.h"
+#include "Log.h"
 #include <cstring>
 
 UserInterface::UserInterface(ThreadCommon::QueueManager* qm) :
 _qm(qm), lcd1(nullptr)
 {
+	LOG_DEBUG("Creating UserInterface");
 	this->initLCD1();
 }
 
 UserInterface::~UserInterface()
 {
+	LOG_ERROR("Deleting UserInterface");
 	delete this->lcd1;
 	delete this->lcd1_rs;
 	delete this->lcd1_en;
@@ -45,7 +48,7 @@ void UserInterface::handleEvent(InterfaceWithData* ui_data)
 		break;
 	default:
 		//Should never happen.
-		printf("WARNING: [UserInterface::handleEvent] executed default case.\n");
+		LOG_ERROR("[UserInterface::handleEvent] executed default case");
 		break;
 	}
 }
@@ -57,13 +60,16 @@ void UserInterface::handleEvent(InterfaceWithData* ui_data)
 void UserInterface::handleLCD(LiquidCrystal *lcd, const char *str)
 {
 	//Interpret empty string as clear.
-	if(!strlen(str))
+	if(!strlen(str)){
 		lcd->clear();
+		LOG_DEBUG("Clear up LCD");
 	//Print the text otherwise.
+	}
 	else
 	{
 		lcd->setCursor(0, 0);
 		lcd->print(str);
+		LOG_DEBUG("Printing [%s] on LCD", str);
 	}
 }
 
@@ -92,6 +98,7 @@ void UserInterface::initLCD1()
 
 void thread_user_interface(void* pvParams)
 {
-	UserInterface ui(static_cast<ThreadCommon::QueueManager*>(pvParams));
+	ThreadCommon::CommonManagers * manager = static_cast<ThreadCommon::CommonManagers*>(pvParams);
+	UserInterface ui(manager->qm);
 	ui.taskFunction();
 }
