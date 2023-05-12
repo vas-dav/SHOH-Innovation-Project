@@ -60,11 +60,11 @@ void UserInterface::handleEvent(InterfaceWithData* ui_data)
 void UserInterface::handleLCD(LiquidCrystal *lcd, const char *str)
 {
 	//Interpret empty string as clear.
-	if(!strlen(str))
+	if(!strlen(str)){
 		lcd->clear();
 		LOG_INFO("Clear up LCD");
 	//Print the text otherwise.
-	else
+	}else
 	{
 		lcd->setCursor(0, 0);
 		lcd->print(str);
@@ -97,6 +97,7 @@ void UserInterface::initLCD1()
 
 void thread_user_interface(void* pvParams)
 {
-	UserInterface ui(static_cast<ThreadCommon::QueueManager*>(pvParams));
+	ThreadCommon::CommonManagers * manager = static_cast<ThreadCommon::CommonManagers*>(pvParams);
+	UserInterface ui(manager->qm);
 	ui.taskFunction();
 }

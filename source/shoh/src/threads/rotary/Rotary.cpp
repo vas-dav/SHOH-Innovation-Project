@@ -86,6 +86,7 @@ void thread_rotary(void* pvParams)
 	QueueHandle_t rotary_isr_q = xQueueCreate(15, sizeof(char));
 	p_rotary_isr_q = &rotary_isr_q;
 
-	Rotary r(static_cast<ThreadCommon::QueueManager*>(pvParams));
+	ThreadCommon::CommonManagers * manager = static_cast<ThreadCommon::CommonManagers*>(pvParams);
+	Rotary r(manager->qm);
 	r.taskFunction();
 }

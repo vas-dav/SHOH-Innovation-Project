@@ -53,6 +53,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/user_interface}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/threads/rotary}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/threads/manager}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/threads/logging}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/peripherals}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.cpp.misc.dialect.4036734" name="Language standard" superClass="com.crt.advproject.cpp.misc.dialect" useByScannerDiscovery="true" value="com.crt.advproject.misc.dialect.cpp17" valueType="enumerated"/>
@@ -86,6 +87,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/master}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/user_interface}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/peripherals}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/shoh/src/threads/logging}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.c.misc.dialect.82852045" name="Language standard" superClass="com.crt.advproject.c.misc.dialect" useByScannerDiscovery="true" value="com.crt.advproject.misc.dialect.c17" valueType="enumerated"/>
 								<inputType id="com.crt.advproject.compiler.input.765511076" superClass="com.crt.advproject.compiler.input"/>

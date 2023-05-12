@@ -5,13 +5,11 @@
 #include "board.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
 
-/*
-    This simlpe logging framework is dependant
-    on std lib's multithread support, thus
-    if needed on different platforms, please
-    wrap it with mutexes.
-*/
+extern QueueHandle_t logging_queue;
 
 /* ================= Settings ================== */
 #define LOG_COLORED_OUTPUT
@@ -44,7 +42,9 @@
 
 #define _LOG_STREAMOUT(message, message_length)                 \
     INT_ASSERT(message_length > 0);                             \
-    printf("%.*s\n", message_length, message);                  \
+    if (logging_queue) {                                          \
+        xQueueSend(logging_queue, (void*)message, portMAX_DELAY);  \
+    }
 
 static void create_log_line(const char * _status,
                             const char * _location,
@@ -69,17 +69,17 @@ static void create_log_line(const char * _status,
 }
 
 #define LOG_INFO(fmt, ...)                                        \
-    create_log_line(C_INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__);  \
+    create_log_line(C_INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
 
 #define LOG_WARNING(fmt, ...)                                        \
-    create_log_line(C_WARN, __FILE__, __LINE__, fmt, ##__VA_ARGS__);  \
+    create_log_line(C_WARN, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
 
 #define LOG_ERROR(fmt, ...)                                       \
-    create_log_line(C_ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__);  \
+    create_log_line(C_ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
 
 #if LOG_DEBUG_MESSAGES
 #define LOG_DEBUG(fmt, ...)                                        \
-    create_log_line(C_INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__);  \
+    create_log_line(C_INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
 #else
 #define LOG_DEBUG(fmt, ...)
 #endif

@@ -52,6 +52,7 @@ void Manager::taskFunction()
 
 void thread_manager(void* pvParams)
 {
-	Manager m(static_cast<ThreadCommon::QueueManager*>(pvParams));
+	ThreadCommon::CommonManagers * manager = static_cast<ThreadCommon::CommonManagers*>(pvParams);
+	Manager m(manager->qm);
 	m.taskFunction();
 }
