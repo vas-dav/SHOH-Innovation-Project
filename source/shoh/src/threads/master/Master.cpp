@@ -9,6 +9,7 @@
 #include "Log.h"
 #include "ThreadCommon.h"
 #include "Rotary.h"
+#include "Relay.h"
 #include "Manager.h"
 #include "Logging.h"
 #include "UserInterface.h"
@@ -108,6 +109,9 @@ void thread_master(void* pvParams) {
 	manager->qm->createQueue(20,
 							sizeof(UserInterface::InterfaceWithData),
 							ThreadCommon::QueueManager::ui_event_manager);
+	manager->qm->createQueue(10,
+							sizeof(Event),
+							ThreadCommon::QueueManager::relay_event_master);
 	LOG_INFO("Master created queues");
 
 
@@ -119,6 +123,9 @@ void thread_master(void* pvParams) {
 							configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	manager->tm->createTask(thread_user_interface, "user_interface",
+							configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
+							static_cast<void*>(manager));
+	manager->tm->createTask(thread_relay, "relay",
 							configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	LOG_INFO("Master created tasks");
