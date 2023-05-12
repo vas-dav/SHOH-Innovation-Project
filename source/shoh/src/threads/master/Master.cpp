@@ -86,7 +86,7 @@ void Master::taskFunction() {
 void thread_master(void* pvParams) {
 	ThreadCommon::CommonManagers * manager = static_cast<ThreadCommon::CommonManagers*>(pvParams);
 
-	manager->qm->createQueue(50,
+	manager->qm->createQueue(5,
 							LOG_BUFFER_MAX_CAP,
 							ThreadCommon::QueueManager::logging_message_all);
 	logging_queue = manager->qm->getQueue(ThreadCommon::QueueManager::logging_message_all);
@@ -111,9 +111,6 @@ void thread_master(void* pvParams) {
 
 
 	LOG_INFO("Master is creating tasks");
-	manager->tm->createTask(thread_master, "master",
-							configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
-							static_cast<void*>(manager));
 	manager->tm->createTask(thread_manager, "manager",
 							configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));

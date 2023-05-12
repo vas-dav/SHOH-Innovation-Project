@@ -37,7 +37,7 @@ extern QueueHandle_t logging_queue;
 #define C_ERROR "ERROR"
 #endif
 
-#define LOG_BUFFER_MAX_CAP 500
+#define LOG_BUFFER_MAX_CAP 256
 #define LOG_MESSAGE_MAX_CAP 150
 
 #define _LOG_STREAMOUT(message, message_length)                 \
@@ -58,7 +58,7 @@ static void create_log_line(const char * _status,
     va_end(args);
     char buffer [LOG_BUFFER_MAX_CAP] = {0};
     int buffer_len = snprintf(buffer, LOG_BUFFER_MAX_CAP,
-                             "[%s] [File: %s] [Line: %ld] %.*s",
+                             "[%s] [File: %s] [Line: %d] %.*s",
                              _status,
                              _location,
                              _line,

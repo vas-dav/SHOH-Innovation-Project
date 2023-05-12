@@ -68,7 +68,7 @@ void UserInterface::handleLCD(LiquidCrystal *lcd, const char *str)
 	{
 		lcd->setCursor(0, 0);
 		lcd->print(str);
-		LOG_INFO("Printing [%s] on LCD");
+		LOG_INFO("Printing [%s] on LCD", str);
 	}
 }
 

@@ -20,11 +20,14 @@ Logging::~Logging() {
 
 void Logging::taskFunction()
 {
-	char data[LOG_BUFFER_MAX_CAP] = {0};
-	xQueueReceive(q, static_cast<char*>(data), portMAX_DELAY);
-	mutex.lock();
-	printf("%s\n", data);
-	mutex.unlock();
+	for(;;)
+	{
+		char data[LOG_BUFFER_MAX_CAP] = {0};
+		xQueueReceive(q, static_cast<char*>(data), portMAX_DELAY);
+		mutex.lock();
+		printf("%s\n", data);
+		mutex.unlock();
+	}
 }
 
 void thread_logging(void* pvParams)

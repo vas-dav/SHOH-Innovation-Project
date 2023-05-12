@@ -11,7 +11,7 @@ static LpcDebugUart *dbgu;
 
 void retarget_init()
 {
-	LpcPinMap none = {-1, -1}; // unused pin has negative values in it
+	//LpcPinMap none = {-1, -1}; // unused pin has negative values in it
 	//Sadly, it seems that only USART0 is redirected to USB.
 	//It means that those are pins PIO0_18 and PIO0_19
 	LpcPinMap txpin = { 0, 19 }; // transmit pin that goes to debugger's UART->USB converter

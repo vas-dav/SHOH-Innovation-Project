@@ -77,15 +77,6 @@ namespace ThreadCommon
         ThreadManager * tm;
         QueueManager * qm;
     } CommonManagers;
-
-    /* global variables */
-    /* 'receiver'_'what'_'sender'_q */
-    /*
-    extern QueueHandle_t master_event_all_q;
-    extern QueueHandle_t relay_event_master_q;
-    extern QueueHandle_t manager_event_master_q;
-    extern QueueHandle_t ui_event_manager_q;
-    */
 }
 
 #endif /*__THREAD_COMMON_H_*/

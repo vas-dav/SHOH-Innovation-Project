@@ -17,11 +17,14 @@ int main(void)
 
   retarget_init();
 
-  ThreadCommon::CommonManagers manager = {new ThreadCommon::ThreadManager,
-                                          new ThreadCommon::QueueManager};
-  manager.tm->createTask(thread_master, "master",
+  ThreadCommon::ThreadManager *tm = new ThreadCommon::ThreadManager();
+  ThreadCommon::QueueManager *qm = new ThreadCommon::QueueManager();
+  ThreadCommon::CommonManagers *manager = new ThreadCommon::CommonManagers;
+  manager->tm = tm;
+  manager->qm = qm;
+  manager->tm->createTask(thread_master, "master",
                         configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
-                        static_cast<void*>(&manager));
+                        static_cast<void*>(manager));
   vTaskStartScheduler ();
 
   return 1;
