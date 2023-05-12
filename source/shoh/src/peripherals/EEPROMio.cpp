@@ -58,7 +58,7 @@ EEPROMio::write_to (uint32_t addr, std::string str)
 {
   std::copy (str.begin (), str.end (), std::begin (buffer));
   eeprom_use (buffer, addr, str.length (), WRITE);
-  LOG_INFO("%dB written to EEPROM", str.length ());
+  LOG_DEBUG("%dB written to EEPROM", str.length ());
 }
 
 void *
@@ -66,7 +66,7 @@ EEPROMio::read_from (uint32_t addr, uint32_t amount)
 {
   eeprom_use (buffer, addr, amount, READ);
   void *data = (void *)buffer;
-  LOG_INFO("%dB read from EEPROM", amount);
+  LOG_DEBUG("%dB read from EEPROM", amount);
   return data;
 }
 void
@@ -75,6 +75,6 @@ EEPROMio::write_to (uint32_t addr, void *data, uint32_t size_of_data)
   assert (size_of_data < EEPROM_MAX_BUFER_SIZE);
   e_memcpy (data, buffer, size_of_data);
   eeprom_use (buffer, addr, size_of_data, WRITE);
-  LOG_INFO("%dB written to EEPROM", size_of_data);
+  LOG_DEBUG("%dB written to EEPROM", size_of_data);
 }
 
