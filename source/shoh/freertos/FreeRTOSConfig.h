@@ -91,7 +91,8 @@
 #define configUSE_MALLOC_FAILED_HOOK	1
 #define configUSE_APPLICATION_TASK_TAG	0
 #define configUSE_COUNTING_SEMAPHORES	1
-#define configGENERATE_RUN_TIME_STATS	0
+#define configGENERATE_RUN_TIME_STATS	1
+#define configRECORD_STACK_HIGH_ADDRESS 1
 #define configUSE_TICKLESS_IDLE 1 
 
 
@@ -118,6 +119,16 @@ to exclude the API function. */
 #define INCLUDE_vTaskDelayUntil			1
 #define INCLUDE_vTaskDelay				1
 #define INCLUDE_xTaskGetCurrentTaskHandle 1
+
+/* NOTE: we need to provide implementation of vConfigureTimerForRunTimeStats()
+ * It is called to set up high resolution timer that is needed for accurate runtime
+ * measurement. I assume that we use LPC_SCT1 in unified mode so this function
+ * must set up LPC_SCT1.
+ */
+void vConfigureTimerForRunTimeStats(void);
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() vConfigureTimerForRunTimeStats()
+/* The value is read directly from the counter register for efficiency and low overhead. */
+#define portGET_RUN_TIME_COUNTER_VALUE() LPC_SCT1->COUNT_U
 
 /* Cortex-M specific definitions. */
 #ifdef __NVIC_PRIO_BITS

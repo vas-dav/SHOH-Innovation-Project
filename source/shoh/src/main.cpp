@@ -29,3 +29,16 @@ int main(void)
 
   return 1;
 }
+
+extern "C"
+{
+  void
+  vConfigureTimerForRunTimeStats (void)
+  {
+    Chip_SCT_Init (LPC_SCT1);
+    LPC_SCT1->CONFIG = SCT_CONFIG_32BIT_COUNTER;
+    LPC_SCT1->CTRL_U = SCT_CTRL_PRE_L (255)
+                            | SCT_CTRL_CLRCTR_L; // set prescaler to 256 (255 +
+                                                 // 1), and start timer
+  }
+}
