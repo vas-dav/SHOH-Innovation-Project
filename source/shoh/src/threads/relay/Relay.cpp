@@ -129,12 +129,12 @@ void Relay::utilizeEventData()
         pm = POWER_3;
     }
 
-    if (diff >= 5)
+    else if (diff >= 5)
     {
         pm = POWER_2;
     }
 
-    if (diff >= 1)
+    else if (diff >= 1)
     {
         pm = POWER_1;
     }
@@ -147,4 +147,5 @@ void thread_relay(void * pvParams)
 {
 	ThreadCommon::CommonManagers * manager = static_cast<ThreadCommon::CommonManagers*>(pvParams);
 	Relay r(manager->qm);
+	r.taskFunction();
 }
