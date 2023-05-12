@@ -24,6 +24,7 @@ public:
 private:
 	Event* message;
 	ThreadCommon::QueueManager* _qm;
+	void HandleEventType(Event* e, Event::EventType type);
 };
 
 void thread_master(void* pvParams);

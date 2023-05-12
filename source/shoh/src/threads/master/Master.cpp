@@ -7,41 +7,65 @@
 
 #include "Master.h"
 
+static const char* rotary_direction[] = 
+{
+	"Right",
+	"Left",
+	"Press",
+	"Idle"
+};
+
 Master::Master(ThreadCommon::QueueManager* qm) : _qm(qm)
 {
 
 }
 
+void Master::HandleEventType(Event* e, Event::EventType type)
+{
+	switch (type) 
+	{
+		case Event::Null:
+			break;
+		case Event::Rotary:
+			//Comes from rotary, goes to manager
+			_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
+			break;
+		case Event::InternalTemp:
+			// TODO remove (deprecated)
+			break;
+		case Event::ExternalTemp:
+			//Comes from sensors, goes to relay & manager
+			_qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
+			_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
+			break;
+		case Event::SetPoint:
+			//Comes from manager, goes to relay 
+			_qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
+			break;
+		default:
+			assert(0);
+			break;
+	}
+}
+
 void Master::taskFunction() {
 	Event data(Event::Null, 0);
-	bool LedState = true;
 	for (;;) {
 		if(!_qm->receive<Event>(ThreadCommon::QueueManager::master_event_all, &data, 10000))
 			data.setDataOf(Event::Rotary, ThreadCommon::RotaryAction::Idle);
-		switch(data.getDataOf(Event::Rotary))
-		{
-			case ThreadCommon::RotaryAction::Right:
-				Board_LED_Set(ThreadCommon::RotaryAction::Right, LedState);
-				printf("Right\r\n");
-				_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, &data, 0);
-				break;
-			case ThreadCommon::RotaryAction::Left:
-				Board_LED_Set(ThreadCommon::RotaryAction::Left, LedState);
-				printf("Left\r\n");
-				_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, &data, 0);
-				break;
-			case ThreadCommon::RotaryAction::Press:
-				Board_LED_Set(ThreadCommon::RotaryAction::Press, LedState);
-				printf("Press\r\n");
-				_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, &data, 0);
-				break;
-			case ThreadCommon::RotaryAction::Idle:
-				//Board_LED_Set(ThreadCommon::RotaryAction::Right, LedState);
-				printf("Idle\r\n");
-				_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, &data, 0);
-				break;
-		}
-		LedState = !LedState;
+		
+		for(Event::EventType i :
+	    {Event::Null, 
+		 Event::Rotary, 
+		 Event::InternalTemp,
+		 Event::ExternalTemp,
+		 Event::SetPoint})
+		 {
+			if (data.getDataOf(i) != ERROR_RETURN)
+			{
+				HandleEventType(&data, i);
+			}
+		 }	
 	}
 }
 
