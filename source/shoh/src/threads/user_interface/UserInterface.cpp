@@ -62,13 +62,14 @@ void UserInterface::handleLCD(LiquidCrystal *lcd, const char *str)
 	//Interpret empty string as clear.
 	if(!strlen(str)){
 		lcd->clear();
-		LOG_INFO("Clear up LCD");
+		LOG_DEBUG("Clear up LCD");
 	//Print the text otherwise.
-	}else
+	}
+	else
 	{
 		lcd->setCursor(0, 0);
 		lcd->print(str);
-		LOG_INFO("Printing [%s] on LCD", str);
+		LOG_DEBUG("Printing [%s] on LCD", str);
 	}
 }
 

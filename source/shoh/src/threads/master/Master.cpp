@@ -108,6 +108,7 @@ void thread_master(void* pvParams) {
 	manager->qm->createQueue(20,
 							sizeof(UserInterface::InterfaceWithData),
 							ThreadCommon::QueueManager::ui_event_manager);
+	LOG_INFO("Master created queues");
 
 
 	LOG_INFO("Master is creating tasks");
@@ -120,5 +121,6 @@ void thread_master(void* pvParams) {
 	manager->tm->createTask(thread_user_interface, "user_interface",
 							configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
+	LOG_INFO("Master created tasks");
 	m.taskFunction();
 }

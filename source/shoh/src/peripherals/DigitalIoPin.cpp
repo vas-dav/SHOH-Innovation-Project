@@ -40,7 +40,7 @@ DigitalIoPin::~DigitalIoPin ()
 void
 DigitalIoPin::setIoPin ()
 {
-  LOG_INFO("P%d_%d set as %s", _io._port, _io._port, 
+  LOG_DEBUG("P%d_%d set as %s", _io._port, _io._pin, 
            _io._input ? "input" : "output");
   bool direction = true;
   if (_io._input)
@@ -65,7 +65,7 @@ DigitalIoPin::setIoPin ()
 void
 DigitalIoPin::setIsr ()
 {
-  LOG_INFO("P%d_%d set as ISR", _io._port, _io._port);
+  LOG_DEBUG("P%d_%d set as ISR", _io._port, _io._pin);
   bool direction = true;
   if (_io._input)
     {
