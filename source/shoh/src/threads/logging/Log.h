@@ -79,7 +79,7 @@ static void create_log_line(const char * _status,
 
 #if LOG_DEBUG_MESSAGES
 #define LOG_DEBUG(fmt, ...)                                        \
-    create_log_line(C_INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
+    create_log_line(C_DEBUG, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
 #else
 #define LOG_DEBUG(fmt, ...)
 #endif
