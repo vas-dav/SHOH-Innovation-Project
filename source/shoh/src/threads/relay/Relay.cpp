@@ -9,11 +9,30 @@
 #include "Event.h"
 #include "Log.h"
 
-Relay::Relay(ThreadCommon::QueueManager* qm): _qm(qm) {
+RelayDevice::RelayDevice(uint8_t en_pin, 
+						 uint8_t en_port, 
+						 uint8_t pha_pin, 
+						 uint8_t pha_port, 
+						 uint8_t relay_device_index
+						 )
+{
+	en = new DigitalIoPin(en_pin, en_port, false);
+	pha = new DigitalIoPin(pha_pin, pha_port, false);
+	LOG_DEBUG("Creating RelayDevice");
+}
+
+RelayDevice::~RelayDevice() 
+{
+	LOG_ERROR("Deleting RelayDevice");
+}
+
+Relay::Relay(ThreadCommon::QueueManager* qm): _qm(qm) 
+{
 	LOG_DEBUG("Creating Relay");
 }
 
-Relay::~Relay() {
+Relay::~Relay() 
+{
 	LOG_ERROR("Deleting Relay");
 }
 
