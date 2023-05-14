@@ -8,6 +8,7 @@
 #define PERIPHERALS_CLOCK_H_
 
 #include "chip.h"
+#include "Fmutex.h"
 
 struct TimeFromStart
 {
@@ -32,6 +33,7 @@ private:
   double _raw_time; //ms
   int64_t _overflows;
   uint32_t _last_counter_value;
+  Fmutex _guard;
 };
 
 #endif /* PERIPHERALS_CLOCK_H_ */

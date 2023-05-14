@@ -43,28 +43,37 @@ Clock::~Clock() {}
  */
 void Clock::updateClock()
 {
-  int64_t diff = 0;
+  int64_t diff_overflows = 0;
   //Remember old number of overflows.
   int64_t old_overflows = this->_overflows;
-  /* It would be nice to halt the counter for the next 2 lines.
-     Unless we are fine with rare 1-second errors.
-  */
+
+  this->_guard.lock();
+  //Stop the counter.
+  Chip_SCT_SetControl(LPC_SCT1, 0x1 << 1);
   //Capture number of counter overflows.
   this->_overflows = counter_overflows;
   //Capture the counter value.
   uint32_t cur_count_u = LPC_SCT1->COUNT_U;
+  //Resume the counter.
+  Chip_SCT_ClearControl(LPC_SCT1, 0x1 << 1);
+  this->_guard.unlock();
 
   //Handle overflows.
-  diff = (old_overflows <= this->_overflows)
+  diff_overflows = (old_overflows <= this->_overflows)
+       //Usually it is new amount of overflows - old.
        ? (this->_overflows - old_overflows)
+       //It is possible that overflows counter will overflow.
        : (0xffffffffffffffff - old_overflows + this->_overflows + 1);
   
+  // Bug
+  // Counts += 1 minute 30 seconds (90 seconds, 90000 ms) sometimes, while has to count 10 seconds (10000 ms)
+
   //Formula for getting elapsed milliseconds since the last function call.
                //Multiply max counter value by the number of overflows.
-  _raw_time += (double)((double)diff * (uint32_t)0xffffffff
+  _raw_time += (double)((double)diff_overflows * (uint32_t)0xffffffff
                         //Add full counter value if there are overflows.
                         //Add difference between 2 captured counter values otherwise.
-                        + ((diff) ? cur_count_u : cur_count_u - this->_last_counter_value))
+                        + ((diff_overflows) ? cur_count_u : cur_count_u - this->_last_counter_value))
                         //We need the value in milliseconds
                         * 1000
                         //Divide it by the clock frequency. t = 1 / f
