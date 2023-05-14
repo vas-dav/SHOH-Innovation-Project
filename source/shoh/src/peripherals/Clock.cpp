@@ -30,7 +30,7 @@ extern "C" {
  * @attention Should be initialised by the first task as early as possible.
  * _overflows(1) is important, since there is a starting overflow.
  */
-Clock::Clock() : _raw_time(0), _overflows(1) {}
+Clock::Clock() : _raw_time(0), _overflows(1), _last_counter_value(0) {}
 
 Clock::~Clock() {}
 
@@ -46,15 +46,33 @@ void Clock::updateClock()
   int64_t diff = 0;
   //Remember old number of overflows.
   int64_t old_overflows = this->_overflows;
+  /* It would be nice to halt the counter for the next 2 lines.
+     Unless we are fine with rare 1-second errors.
+  */
   //Capture number of counter overflows.
   this->_overflows = counter_overflows;
-  
+  //Capture the counter value.
+  uint32_t cur_count_u = LPC_SCT1->COUNT_U;
+
   //Handle overflows.
   diff = (old_overflows <= this->_overflows)
        ? (this->_overflows - old_overflows)
        : (0xffffffffffffffff - old_overflows + this->_overflows + 1);
-  _raw_time += (double)((double)diff * (uint32_t)0xffffffff + LPC_SCT1->COUNT_U) * 1000
+  
+  //Formula for getting elapsed milliseconds since the last function call.
+               //Multiply max counter value by the number of overflows.
+  _raw_time += (double)((double)diff * (uint32_t)0xffffffff
+                        //Add full counter value if there are overflows.
+                        //Add difference between 2 captured counter values otherwise.
+                        + ((diff) ? cur_count_u : cur_count_u - this->_last_counter_value))
+                        //We need the value in milliseconds
+                        * 1000
+                        //Divide it by the clock frequency. t = 1 / f
                         / (double)(Chip_Clock_GetMainClockRate());
+
+  //Remember last counter value.
+  //It is important if we won't have an overflow next time.
+  this->_last_counter_value = LPC_SCT1->COUNT_U;
 }
 
 TimeFromStart Clock::getTimeFromStart()
@@ -65,7 +83,7 @@ TimeFromStart Clock::getTimeFromStart()
 
 TimeFromStart Clock::convertToTimeFromStart(double raw_time)
 {
-  //The convertion is slow, but reliable.
+  //The conversion is slow, but reliable.
   TimeFromStart tfs;
   tfs.days = raw_time / 86400000;
   tfs.hours = raw_time / 3600000 - tfs.days * 24; //Can be ((long long int)raw_time % 86400000)

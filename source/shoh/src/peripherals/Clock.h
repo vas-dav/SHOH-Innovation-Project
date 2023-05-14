@@ -31,6 +31,7 @@ public:
 private:
   double _raw_time; //ms
   int64_t _overflows;
+  uint32_t _last_counter_value;
 };
 
 #endif /* PERIPHERALS_CLOCK_H_ */
