@@ -14,7 +14,6 @@
 #include "Logging.h"
 #include "UserInterface.h"
 #include "queue.h"
-#include "Logging.h"
 
 static const char* rotary_direction[] = 
 {
@@ -25,10 +24,16 @@ static const char* rotary_direction[] =
 };
 
 QueueHandle_t logging_queue;
+Clock *global_clock = new Clock();
 
 Master::Master(ThreadCommon::QueueManager* qm) : _qm(qm)
 {
 	LOG_DEBUG("Creating Master");
+}
+
+Master::~Master()
+{
+	LOG_ERROR("Master was deleted");
 }
 
 void Master::HandleEventType(Event* e, Event::EventType type)
@@ -40,6 +45,7 @@ void Master::HandleEventType(Event* e, Event::EventType type)
 		case Event::Rotary:
 			//Comes from rotary, goes to manager
 			_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
+			//LOG_WARNING("Timestamp: %zus, Clock: %zu, Chip freq: %zu", LPC_SCT1->COUNT_U / Chip_Clock_GetMainClockRate(), LPC_SCT1->COUNT_U, Chip_Clock_GetMainClockRate());
 			LOG_DEBUG("Rotary: %s has been forwarded to manager", rotary_direction[e->getDataOf(type)]);
 			break;
 		case Event::InternalTemp:
@@ -79,7 +85,8 @@ void Master::taskFunction() {
 			{
 				HandleEventType(&data, i);
 			}
-		 }	
+		 }
+		global_clock->updateClock();
 	}
 }
 

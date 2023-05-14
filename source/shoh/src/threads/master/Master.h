@@ -20,7 +20,7 @@
 class Master {
 public:
 	Master(ThreadCommon::QueueManager* qm);
-	virtual ~Master() = default;
+	virtual ~Master();
 	void taskFunction();
 
 private:
