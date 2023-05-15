@@ -19,11 +19,23 @@ set_point_text("CURRENT %3d     DESIRED[%3d]    ")
 	this->SetState(&Menu::sInitView);
     ext_temp.setCurrent(0);
     set_point.setCurrent(0);
+    readSetPointFromEEPROM();
 }
 
 Menu::~Menu() 
 {
     LOG_DEBUG("Deleting Menu");
+}
+
+void
+Menu::readSetPointFromEEPROM (void)
+{
+  EventRawData *data = (EventRawData *)eeprom.read_from (EEPROM_START_ADDR,
+                                                   sizeof(EventRawData));
+  if ((*data) > 0 && (*data) < 120)
+    {
+      set_point.setCurrent(*data);
+    }
 }
 
 void Menu::HandleEventPair (Event::EventPair *ep)
@@ -135,6 +147,8 @@ void Menu::sMainView(const MenuObjEvent &e)
 void Menu::sSetPointMod(const MenuObjEvent &e)
 {
     static char screen_text[64];
+    EventRawData sp;
+    Event event_sp (Event::EventType::SetPoint, set_point.getCurrent());
     switch (e.type)
     {
     case MenuObjEvent::eFocus:
@@ -161,7 +175,15 @@ void Menu::sSetPointMod(const MenuObjEvent &e)
         break;
     case MenuObjEvent::eClick:
         LOG_DEBUG("click sSetPointMod");
+        sp = set_point.getCurrent();
+        // Write to EEPROM
+        eeprom.write_to(EEPROM_START_ADDR, (void*)&sp, sizeof(EventRawData));
+
+        event_sp.setDataOf(Event::EventType::SetPoint, sp);
+        _qm->send<Event>(ThreadCommon::QueueManager::master_event_all, &event_sp, 1);
+        
         this->SetState(&Menu::sMainView);
+    
         break;
     case MenuObjEvent::eRefresh:
         LOG_DEBUG("refresh sSetPointMod");

@@ -92,7 +92,7 @@ void thread_master(void* pvParams) {
 							ThreadCommon::QueueManager::logging_message_all);
 	logging_queue = manager->qm->getQueue(ThreadCommon::QueueManager::logging_message_all);
 	manager->tm->createTask(thread_logging, "logging",
-							configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
+							configMINIMAL_STACK_SIZE * 9,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 
 	LOG_INFO("Logging Active");
@@ -117,16 +117,16 @@ void thread_master(void* pvParams) {
 
 	LOG_INFO("Master is creating tasks");
 	manager->tm->createTask(thread_manager, "manager",
-							configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
+							configMINIMAL_STACK_SIZE * 15,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	manager->tm->createTask(thread_rotary, "rotary",
-							configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
+							configMINIMAL_STACK_SIZE * 9,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	manager->tm->createTask(thread_user_interface, "user_interface",
-							configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
+							configMINIMAL_STACK_SIZE * 9,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	manager->tm->createTask(thread_relay, "relay",
-							configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
+							configMINIMAL_STACK_SIZE * 9,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	LOG_INFO("Master created tasks");
 	m.taskFunction();
