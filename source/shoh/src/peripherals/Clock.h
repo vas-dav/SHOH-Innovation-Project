@@ -31,8 +31,8 @@ public:
   double convertToTimeFromStartRaw(TimeFromStart tfs);
 private:
   double _raw_time; //ms
-  int64_t _overflows;
-  uint32_t _last_counter_value;
+  uint64_t _overflows;
+  uint64_t _last_counter_value;
   Fmutex _guard;
 };
 

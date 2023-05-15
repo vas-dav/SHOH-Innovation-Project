@@ -8,6 +8,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#define MAX_COUNTER_VALUE (uint64_t)0xffffffff
+
 static uint64_t counter_overflows = 0;
 
 extern "C" {
@@ -43,9 +45,9 @@ Clock::~Clock() {}
  */
 void Clock::updateClock()
 {
-  int64_t diff_overflows = 0;
+  uint64_t diff_overflows = 0;
   //Remember old number of overflows.
-  int64_t old_overflows = this->_overflows;
+  uint64_t old_overflows = this->_overflows;
 
   this->_guard.lock();
   //Stop the counter.
@@ -53,7 +55,7 @@ void Clock::updateClock()
   //Capture number of counter overflows.
   this->_overflows = counter_overflows;
   //Capture the counter value.
-  uint32_t cur_count_u = LPC_SCT1->COUNT_U;
+  uint64_t cur_count_u = LPC_SCT1->COUNT_U;
   //Resume the counter.
   Chip_SCT_ClearControl(LPC_SCT1, 0x1 << 1);
   this->_guard.unlock();
@@ -63,25 +65,31 @@ void Clock::updateClock()
        //Usually it is new amount of overflows - old.
        ? (this->_overflows - old_overflows)
        //It is possible that overflows counter will overflow.
-       : (0xffffffffffffffff - old_overflows + this->_overflows + 1);
+       : (0xffffffffffffffff - old_overflows + this->_overflows);
   
-  // Bug
-  // Counts += 1 minute 30 seconds (90 seconds, 90000 ms) sometimes, while has to count 10 seconds (10000 ms)
-
-  //Formula for getting elapsed milliseconds since the last function call.
-               //Multiply max counter value by the number of overflows.
-  _raw_time += (double)((double)diff_overflows * (uint32_t)0xffffffff
-                        //Add full counter value if there are overflows.
-                        //Add difference between 2 captured counter values otherwise.
-                        + ((diff_overflows) ? cur_count_u : cur_count_u - this->_last_counter_value))
-                        //We need the value in milliseconds
-                        * 1000
-                        //Divide it by the clock frequency. t = 1 / f
-                        / (double)(Chip_Clock_GetMainClockRate());
+  //First case -> no overflow
+  if(!diff_overflows)
+  {
+    //Get the difference between values and convert to milliseconds. (t(ms) = 1000 / f)
+    _raw_time += (double)((cur_count_u - this->_last_counter_value) * 1000)
+               / (double)(Chip_Clock_GetMainClockRate());
+  }
+  //Second case -> overflow
+  else
+  {
+    _raw_time += (double)(
+    //Add full counter values for all overflows except one.
+    (MAX_COUNTER_VALUE * (diff_overflows - 1)
+    //Add the difference between counter values having overflow in mind.
+    + (cur_count_u + (MAX_COUNTER_VALUE - _last_counter_value)))
+    //Convert to milliseconds.
+    * 1000)
+    / (double)(Chip_Clock_GetMainClockRate());
+  }
 
   //Remember last counter value.
   //It is important if we won't have an overflow next time.
-  this->_last_counter_value = LPC_SCT1->COUNT_U;
+  this->_last_counter_value = cur_count_u;
 }
 
 TimeFromStart Clock::getTimeFromStart()
