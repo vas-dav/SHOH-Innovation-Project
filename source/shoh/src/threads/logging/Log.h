@@ -8,7 +8,9 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "Clock.h"
 
+extern Clock *global_clock;
 extern QueueHandle_t logging_queue;
 
 /* ================= Settings ================== */
@@ -46,8 +48,10 @@ extern QueueHandle_t logging_queue;
         xQueueSend(logging_queue, (void*)message, portMAX_DELAY);  \
     }
 
-static void create_log_line(const char * _status,
+static void create_log_line(const TimeFromStart _timestamp,
+                            const char * _status,
                             const char * _location,
+                            const char * _func,
                             const size_t _line,
                             const char * _fmt, ...)
 {
@@ -58,9 +62,15 @@ static void create_log_line(const char * _status,
     va_end(args);
     char buffer [LOG_BUFFER_MAX_CAP] = {0};
     int buffer_len = snprintf(buffer, LOG_BUFFER_MAX_CAP,
-                             "[%s] [File: %s] [Line: %d] %.*s",
+                             "[%02zu:%02zu:%02zu:%02zu:%03zu]:[%s] In [File: %s] [Func: %s] [Line: %zu]\r\n %.*s",
+                             _timestamp.days,
+                             _timestamp.hours,
+                             _timestamp.minutes,
+                             _timestamp.seconds,
+                             _timestamp.milliseconds,
                              _status,
                              _location,
+                             _func,
                              _line,
                              message_len,
                              message);
@@ -68,18 +78,18 @@ static void create_log_line(const char * _status,
     
 }
 
-#define LOG_INFO(fmt, ...)                                        \
-    create_log_line(C_INFO, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
+#define LOG_INFO( fmt, ...)                                        \
+    create_log_line(global_clock->getTimeFromStart(), C_INFO, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__);
 
 #define LOG_WARNING(fmt, ...)                                        \
-    create_log_line(C_WARN, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
+    create_log_line(global_clock->getTimeFromStart(), C_WARN, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__);
 
 #define LOG_ERROR(fmt, ...)                                       \
-    create_log_line(C_ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
+    create_log_line(global_clock->getTimeFromStart(), C_ERROR, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__);
 
 #if LOG_DEBUG_MESSAGES
 #define LOG_DEBUG(fmt, ...)                                        \
-    create_log_line(C_DEBUG, __FILE__, __LINE__, fmt, ##__VA_ARGS__);
+    create_log_line(global_clock->getTimeFromStart(), C_DEBUG, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__);
 #else
 #define LOG_DEBUG(fmt, ...)
 #endif
