@@ -11,6 +11,7 @@
 #include "Counter.h"
 #include "MenuObjEvent.h"
 #include "ThreadCommon.h"
+#include "EEPROMio.h"
 #include "Event.h"
 
 class Menu;
@@ -29,6 +30,7 @@ private:
   p_state current;
   Counter<EventRawData> ext_temp;
   Counter<EventRawData> set_point;
+  EEPROMio eeprom;
   const char main_text[64];
   const char set_point_text[64];
   /* States */
@@ -39,6 +41,7 @@ private:
   void SetState (p_state new_state);
   void HandleObj (const MenuObjEvent &event);
   void NotifyAndRefreshUI (const char *str);
+  void readSetPointFromEEPROM (void);
 };
 
 #endif /* THREADS_MANAGER_MENU_H_ */

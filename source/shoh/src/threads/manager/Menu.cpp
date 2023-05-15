@@ -19,11 +19,23 @@ set_point_text("CURRENT %3d     DESIRED[%3d]    ")
 	this->SetState(&Menu::sInitView);
     ext_temp.setCurrent(0);
     set_point.setCurrent(0);
+    readSetPointFromEEPROM();
 }
 
 Menu::~Menu() 
 {
     LOG_DEBUG("Deleting Menu");
+}
+
+void
+Menu::readSetPointFromEEPROM (void)
+{
+  EventRawData *data = (EventRawData *)eeprom.read_from (EEPROM_START_ADDR,
+                                                   sizeof(EventRawData));
+  if ((*data) > 0 && (*data) < 120)
+    {
+      ext_temp.setCurrent(*data);
+    }
 }
 
 void Menu::HandleEventPair (Event::EventPair *ep)
@@ -135,6 +147,7 @@ void Menu::sMainView(const MenuObjEvent &e)
 void Menu::sSetPointMod(const MenuObjEvent &e)
 {
     static char screen_text[64];
+    EventRawData sp;
     switch (e.type)
     {
     case MenuObjEvent::eFocus:
@@ -161,6 +174,9 @@ void Menu::sSetPointMod(const MenuObjEvent &e)
         break;
     case MenuObjEvent::eClick:
         LOG_DEBUG("click sSetPointMod");
+        sp = set_point.getCurrent();
+        // Write to EEPROM
+        eeprom.write_to(EEPROM_START_ADDR, (void*)&sp, sizeof(EventRawData));
         this->SetState(&Menu::sMainView);
         break;
     case MenuObjEvent::eRefresh:
