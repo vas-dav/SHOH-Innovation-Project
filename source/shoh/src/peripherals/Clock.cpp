@@ -8,7 +8,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define MAX_COUNTER_VALUE (uint64_t)0xffffffff
+static const uint64_t max_counter_value = 0xffffffff;
 
 static uint64_t counter_overflows = 0;
 
@@ -25,6 +25,35 @@ extern "C" {
 		Chip_SCT_ClearEventFlag(LPC_SCT1, SCT_EVT_0);
 		portEND_SWITCHING_ISR(xHigherPriorityWoken);
 	}
+
+  /** 
+   * @brief This function is used by FreeRTOS to configure the collection of
+   * time used by tasks.
+   */
+  void
+  vConfigureTimerForRunTimeStats (void)
+  {
+    Chip_SCT_Init (LPC_SCT1);
+    /* Sets match to trigger when all bits of counter are 1 */
+    Chip_SCT_SetMatchCount(LPC_SCT1, SCT_MATCH_0, 0xffffffff);
+    /* Set corresponding match register to event */
+    LPC_SCT1->EVENT[0].CTRL |= 0x1 | (0x1 << 12);
+    /* Enable event */
+    LPC_SCT1->EVENT[0].STATE |= 0x1;
+
+    /* Set the interrupt */
+    Chip_SCT_EnableEventInt(LPC_SCT1, SCT_EVT_0);
+
+    /* Clear timer of any pending interrupts */
+    NVIC_ClearPendingIRQ(SCT0_1_IRQn);
+
+    /* Enable timer interrupt */
+    NVIC_EnableIRQ(SCT0_1_IRQn);
+
+    /* Start timer */
+    LPC_SCT1->CONFIG = SCT_CONFIG_32BIT_COUNTER;
+    LPC_SCT1->CTRL_U = SCT_CTRL_CLRCTR_L;
+  }
 }
 
 /**
@@ -79,9 +108,9 @@ void Clock::updateClock()
   {
     _raw_time += (double)(
     //Add full counter values for all overflows except one.
-    (MAX_COUNTER_VALUE * (diff_overflows - 1)
+    (max_counter_value * (diff_overflows - 1)
     //Add the difference between counter values having overflow in mind.
-    + (cur_count_u + (MAX_COUNTER_VALUE - _last_counter_value)))
+    + (cur_count_u + (max_counter_value - _last_counter_value)))
     //Convert to milliseconds.
     * 1000)
     / (double)(Chip_Clock_GetMainClockRate());
@@ -122,43 +151,10 @@ double Clock::getTimeFromStartRaw()
   return this->_raw_time;
 }
 
-double Clock::convertToTimeFromStartRaw(TimeFromStart tfs)
+inline double Clock::convertToTimeFromStartRaw(TimeFromStart tfs)
 {
   return (double)(tfs.days * 86400000 + tfs.hours * 3600000
                                       + tfs.minutes * 60000
                                       + tfs.seconds * 1000
                                       + tfs.milliseconds);
-}
-
-extern "C"
-{
-  /** 
-   * @brief This function is used by FreeRTOS to configure the collection of
-   * time used by tasks.
-   * .
-   */
-  void
-  vConfigureTimerForRunTimeStats (void)
-  {
-    Chip_SCT_Init (LPC_SCT1);
-    /* Sets match to trigger when all bits of counter are 1 */
-    Chip_SCT_SetMatchCount(LPC_SCT1, SCT_MATCH_0, 0xffffffff);
-    /* Set corresponding match register to event */
-    LPC_SCT1->EVENT[0].CTRL |= 0x1 | (0x1 << 12);
-    /* Enable event */
-    LPC_SCT1->EVENT[0].STATE |= 0x1;
-
-    /* Set the interrupt */
-    Chip_SCT_EnableEventInt(LPC_SCT1, SCT_EVT_0);
-
-    /* Clear timer of any pending interrupts */
-    NVIC_ClearPendingIRQ(SCT0_1_IRQn);
-
-    /* Enable timer interrupt */
-    NVIC_EnableIRQ(SCT0_1_IRQn);
-
-    /* Start timer */
-    LPC_SCT1->CONFIG = SCT_CONFIG_32BIT_COUNTER;
-    LPC_SCT1->CTRL_U = SCT_CTRL_CLRCTR_L;
-  }
 }
