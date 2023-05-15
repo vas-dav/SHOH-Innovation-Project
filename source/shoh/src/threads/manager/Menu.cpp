@@ -34,7 +34,7 @@ Menu::readSetPointFromEEPROM (void)
                                                    sizeof(EventRawData));
   if ((*data) > 0 && (*data) < 120)
     {
-      ext_temp.setCurrent(*data);
+      set_point.setCurrent(*data);
     }
 }
 
