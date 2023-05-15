@@ -148,6 +148,7 @@ void Menu::sSetPointMod(const MenuObjEvent &e)
 {
     static char screen_text[64];
     EventRawData sp;
+    Event event_sp (Event::EventType::SetPoint, set_point.getCurrent());
     switch (e.type)
     {
     case MenuObjEvent::eFocus:
@@ -177,7 +178,12 @@ void Menu::sSetPointMod(const MenuObjEvent &e)
         sp = set_point.getCurrent();
         // Write to EEPROM
         eeprom.write_to(EEPROM_START_ADDR, (void*)&sp, sizeof(EventRawData));
+
+        event_sp.setDataOf(Event::EventType::SetPoint, sp);
+        _qm->send<Event>(ThreadCommon::QueueManager::master_event_all, &event_sp, 1);
+        
         this->SetState(&Menu::sMainView);
+    
         break;
     case MenuObjEvent::eRefresh:
         LOG_DEBUG("refresh sSetPointMod");
