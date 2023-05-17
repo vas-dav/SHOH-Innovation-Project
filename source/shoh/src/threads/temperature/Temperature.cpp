@@ -14,9 +14,17 @@ Temperature::~Temperature() {}
 
 void Temperature::taskFunction()
 {
-	SensorTempTC74 ext_temp_sensor(this->_pi2c);
+	SensorTempTC74 ext_temp_sensor(this->_pi2c, 0x4a);
+	int8_t temp_value = 0;
 	for (;;)
 	{
+		if (ext_temp_sensor.is_up())
+			temp_value = ext_temp_sensor.getTemperature();
+		
+		LOG_DEBUG("External temperature is: %d", temp_value);
+		
+		//Send temperature on queue. As event. :(
+		
 		
 		vTaskDelay(5000);
 	}

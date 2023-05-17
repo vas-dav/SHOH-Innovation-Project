@@ -121,7 +121,7 @@ void thread_master(void* pvParams) {
 
 	LOG_INFO("Master is creating tasks");
 	manager->tm->createTask(thread_manager, "manager",
-							configMINIMAL_STACK_SIZE * 15,tskIDLE_PRIORITY + 1UL,
+							configMINIMAL_STACK_SIZE * 14,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	manager->tm->createTask(thread_rotary, "rotary",
 							configMINIMAL_STACK_SIZE * 9,tskIDLE_PRIORITY + 1UL,
@@ -133,7 +133,7 @@ void thread_master(void* pvParams) {
 							configMINIMAL_STACK_SIZE * 9,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	manager->tm->createTask(thread_temperature, "temperature",
-							configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
+							configMINIMAL_STACK_SIZE * 9,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	LOG_INFO("Master created tasks");
 	m.taskFunction();
