@@ -13,6 +13,7 @@
 #include "Manager.h"
 #include "Logging.h"
 #include "UserInterface.h"
+#include "Temperature.h"
 #include "queue.h"
 
 static const char* rotary_direction[] = 
@@ -130,6 +131,9 @@ void thread_master(void* pvParams) {
 							static_cast<void*>(manager));
 	manager->tm->createTask(thread_relay, "relay",
 							configMINIMAL_STACK_SIZE * 9,tskIDLE_PRIORITY + 1UL,
+							static_cast<void*>(manager));
+	manager->tm->createTask(thread_temperature, "temperature",
+							configMINIMAL_STACK_SIZE * 10,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	LOG_INFO("Master created tasks");
 	m.taskFunction();
