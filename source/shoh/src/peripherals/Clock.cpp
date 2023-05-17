@@ -93,7 +93,7 @@ void Clock::updateClock()
   diff_overflows = (old_overflows <= this->_overflows)
        //Usually it is new amount of overflows - old.
        ? (this->_overflows - old_overflows)
-       //It is possible that overflows counter will overflow.
+       //It is possible that overflows counter will overflow. (Seems that it causes the timer to get insane count when it works.)
        : (0xffffffffffffffff - old_overflows + this->_overflows);
   
   //First case -> no overflow

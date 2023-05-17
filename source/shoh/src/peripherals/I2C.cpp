@@ -103,7 +103,7 @@ I2C::transaction (uint8_t devAddr, uint8_t *txBuffPtr, uint16_t txSize,
   I2CM_XFER_T i2cmXferRec;
 
   // make sure that master is idle
-  while (Chip_I2CM_StateChanged(this->device) == 0);
+  //while (Chip_I2CM_StateChanged(this->device) == 0);
 
   /* Setup I2C transfer record */
   i2cmXferRec.slaveAddr = devAddr;

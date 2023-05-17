@@ -51,7 +51,7 @@ uint8_t SensorTempTC74::read()
   if (this->on_standby())
   {
     this->remove_standby();
-    vTaskDelay(1);
+    vTaskDelay(3000);
   }
   
   //if ready and up - read
@@ -64,7 +64,7 @@ uint8_t SensorTempTC74::read()
     LOG_WARNING("Unable to read temperature sensor [%d] value.", this->_dev_addr);
   
   //set standy.
-  this->set_standby();
+  //this->set_standby();
 
   return data;
 }

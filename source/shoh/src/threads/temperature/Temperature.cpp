@@ -33,7 +33,7 @@ void Temperature::taskFunction()
 void thread_temperature(void* pvParams)
 {
 	ThreadCommon::CommonManagers * manager = static_cast<ThreadCommon::CommonManagers*>(pvParams);
-	I2C_config conf{0x4a, 55000};
+	I2C_config conf{0x4a, 100000};
 	I2C i2c(conf);
 	Temperature t(manager->qm, &i2c);
 	t.taskFunction();
