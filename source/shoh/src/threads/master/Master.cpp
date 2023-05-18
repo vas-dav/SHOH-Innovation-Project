@@ -42,6 +42,7 @@ void Master::HandleEventType(Event* e)
 	switch (e->getType()) 
 	{
 		case Event::Null:
+			LOG_ERROR("Master recieved Event::Null with data: %d", rd);
 			break;
 		case Event::Rotary:
 			//Comes from rotary, goes to manager
@@ -78,7 +79,7 @@ void Master::taskFunction() {
 		{
 			data.setEvent(Event::Rotary, ThreadCommon::RotaryAction::Idle);
 		}
-		
+
 		HandleEventType(&data);
 
 		global_clock->updateClock();
