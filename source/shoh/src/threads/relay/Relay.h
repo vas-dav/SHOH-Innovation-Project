@@ -51,7 +51,7 @@ private:
 	RelayDevice relays [2] = {{0, 24, 0},
 							  {0, 26, 1}};
 
-	void parseEvent(Event * d);
+	void parseEvent(Event * e);
 	int8_t setpoint, ext_temp;
 };
 

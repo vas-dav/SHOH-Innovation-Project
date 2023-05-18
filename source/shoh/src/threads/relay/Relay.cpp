@@ -87,29 +87,21 @@ void Relay::taskFunction()
 	}
 }
 
-void Relay::parseEvent(Event* d)
+void Relay::parseEvent(Event* e)
 {
-	for (uint8_t i = Event::ExternalTemp; i <= Event::SetPoint; i++)
-		{
-			EventRawData rd = d->getDataOf(static_cast<Event::EventType>(i));
-			if(rd == ERROR_RETURN)
-			{
-				continue;
-			}
-			switch(i /* EventType */)
-			{
-				case Event::ExternalTemp:
-					ext_temp = rd;
-					break;
-				case Event::SetPoint:
-					setpoint = rd;
-					break;
-				default:
-					assert(0);
-					break;
-			}
-		
-		}
+	EventRawData rd = e->getData();
+	switch(e->getType() /* EventType */)
+	{
+		case Event::ExternalTemp:
+			ext_temp = rd;
+			break;
+		case Event::SetPoint:
+			setpoint = rd;
+			break;
+		default:
+			assert(0);
+			break;
+	}	
 }
 
 void Relay::utilizeEventData()
