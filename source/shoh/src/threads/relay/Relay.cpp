@@ -56,6 +56,7 @@ void Relay::setPowerMode(PowerMode pm)
 		relays[INF_RELAY].RelayOff();
 		relays[SUP_RELAY].RelayOff();
 		LOG_INFO("Heater is turned OFF");
+		break;
 	case PowerMode::POWER_1:
 		relays[INF_RELAY].RelayOn();
 		relays[SUP_RELAY].RelayOff();
