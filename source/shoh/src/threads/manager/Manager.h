@@ -20,7 +20,6 @@ public:
 	virtual ~Manager();
 	void taskFunction();
 private:
-	Event::EventPair parseEvent(Event* e);
 	ThreadCommon::QueueManager* _qm;
 	Menu _menu;
 

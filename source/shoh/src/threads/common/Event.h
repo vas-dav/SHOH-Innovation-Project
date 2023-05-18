@@ -8,11 +8,7 @@
 #ifndef THREADS_COMMON_EVENT_H_
 #define THREADS_COMMON_EVENT_H_
 
-#include <string>
-#include <map>
-
 typedef short int EventRawData;
-const EventRawData ERROR_RETURN = -999;
 
 class Event
 {
@@ -27,40 +23,31 @@ public:
             NotifyUI
         };
 
-    typedef struct _EventPair 
-    {
-        EventRawData rd;
-        EventType et;
-    } EventPair;
 
     Event(Event::EventType type, EventRawData data)
     {
-        events.insert({type, data});
+        setEvent(type, data);
+    } 
+
+    void setEvent(Event::EventType type, EventRawData data)
+    {
+        _type = type;
+        _data = data;
     }
 
-    void inline addData(Event::EventType type, EventRawData data)
+    Event::EventType inline getType() const
     {
-        const auto pos = events.find(type);
-        // No duplicates
-        if (pos == events.end())
-            events.insert({type, data});
+        return _type;
     }
 
-    EventRawData getDataOf(Event::EventType e) const
+    EventRawData inline  getData() const
     {
-        const auto pos = events.find(e);
-        if (pos == events.end())
-            return ERROR_RETURN;
-        return pos->second;
-    }
-
-    void inline setDataOf(Event::EventType e, EventRawData data)
-    {
-        events[e] = data;
+        return _data;
     }
 
 private:
-    std::map <Event::EventType, EventRawData> events;
+    Event::EventType _type;
+    EventRawData _data;
 };
 
 
