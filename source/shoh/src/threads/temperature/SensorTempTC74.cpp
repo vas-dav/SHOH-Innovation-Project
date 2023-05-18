@@ -19,7 +19,7 @@ SensorTempTC74::~SensorTempTC74()
 
 int8_t SensorTempTC74::getTemperature()
 {
-  return static_cast<int8_t>(this->read());
+  return static_cast<int8_t>(this->read()) - 6;
 }
 
 bool SensorTempTC74::is_up()
