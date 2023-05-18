@@ -23,7 +23,7 @@ extern "C"
 	xQueueSendFromISR (*p_rotary_isr_q, &data,  &xHigherPriorityWoken);
 	if(!xHigherPriorityWoken)
 	{
-		LOG_WARNING("[PIN_INT0_IRQn] portEND_SWITCHING_ISR called with False value");
+		LOG_DEBUG_ISR("[PIN_INT0_IRQn] portEND_SWITCHING_ISR called with False value");
 	}
 	portEND_SWITCHING_ISR(xHigherPriorityWoken);
   }
@@ -37,7 +37,7 @@ extern "C"
 	xQueueSendFromISR (*p_rotary_isr_q, &data,  &xHigherPriorityWoken);
 	if(!xHigherPriorityWoken)
 	{
-		LOG_WARNING("[PIN_INT1_IRQn] portEND_SWITCHING_ISR called with False value");
+		LOG_DEBUG_ISR("[PIN_INT1_IRQn] portEND_SWITCHING_ISR called with False value");
 	}
 	portEND_SWITCHING_ISR(xHigherPriorityWoken);
   }
@@ -51,7 +51,7 @@ extern "C"
 	xQueueSendFromISR (*p_rotary_isr_q, &data,  &xHigherPriorityWoken);
 	if(!xHigherPriorityWoken)
 	{
-		LOG_WARNING("[PIN_INT2_IRQn] portEND_SWITCHING_ISR called with False value");
+		LOG_DEBUG_ISR("[PIN_INT2_IRQn] portEND_SWITCHING_ISR called with False value");
 	}
 	portEND_SWITCHING_ISR(xHigherPriorityWoken);
   }
