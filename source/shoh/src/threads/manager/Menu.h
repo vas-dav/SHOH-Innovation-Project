@@ -31,16 +31,16 @@ private:
   Counter<EventRawData> ext_temp;
   Counter<EventRawData> set_point;
   EEPROMio eeprom;
-  const char main_text[64];
-  const char set_point_text[64];
+  char screen_text[64];
   /* States */
   void sInitView(const MenuObjEvent &e);
   void sMainView(const MenuObjEvent &e);
   void sSetPointMod(const MenuObjEvent &e);
   /* Methods */
+  void constructUIString(uint8_t line, const char *fmt, ...);
   void SetState (p_state new_state);
   void HandleObj (const MenuObjEvent &event);
-  void NotifyAndRefreshUI (const char *str);
+  void NotifyAndRefreshUI ();
   void readSetPointFromEEPROM (void);
 };
 
