@@ -30,7 +30,7 @@ void Temperature::taskFunction()
 		}
 
 		LOG_DEBUG("External temperature is: %d", temp_value);
-		t.setDataOf(Event::ExternalTemp, temp_value);
+		t.setEvent(Event::ExternalTemp, temp_value);
 		_qm->send<Event>(ThreadCommon::QueueManager::master_event_all, &t, 0);
 		vTaskDelay(5000);
 	}
