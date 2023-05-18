@@ -22,7 +22,7 @@ class Menu
 public:
   Menu (ThreadCommon::QueueManager* qm);
   virtual ~Menu ();
-  void HandleEventPair (Event::EventPair *ep);
+  void HandleEventPair (Event *ep);
 
 private:
   /* Variables and objects */

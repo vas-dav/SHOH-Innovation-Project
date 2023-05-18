@@ -38,14 +38,14 @@ Menu::readSetPointFromEEPROM (void)
     }
 }
 
-void Menu::HandleEventPair (Event::EventPair *ep)
+void Menu::HandleEventPair (Event *ep)
 {
-    switch(ep->et/*EventType*/)
+    switch(ep->getType()/*EventType*/)
     {
         case Event::Rotary:
             // can be wrapped in a function, but this was found to be more clear solution,
             // since we are still handling eventpair here, although nested
-            switch(static_cast<ThreadCommon::RotaryAction>(ep->rd)/*RawData*/)
+            switch(static_cast<ThreadCommon::RotaryAction>(ep->getData())/*RawData*/)
             {
                 case ThreadCommon::RotaryAction::Right:
                     this->HandleObj(MenuObjEvent (MenuObjEvent::eRollClockWise));
@@ -68,7 +68,7 @@ void Menu::HandleEventPair (Event::EventPair *ep)
             break;
         case Event::ExternalTemp:
             //Change ExternalTemp value. -99 <= ext_temp <= 99
-            this->ext_temp.setCurrent(ep->rd);
+            this->ext_temp.setCurrent(ep->getData());
             //Refresh the menu screen.
             this->HandleObj(MenuObjEvent (MenuObjEvent::eRefresh));
             break;
@@ -179,7 +179,7 @@ void Menu::sSetPointMod(const MenuObjEvent &e)
         // Write to EEPROM
         eeprom.write_to(EEPROM_START_ADDR, (void*)&sp, sizeof(EventRawData));
 
-        event_sp.setDataOf(Event::EventType::SetPoint, sp);
+        event_sp.setEvent(Event::EventType::SetPoint, sp);
         _qm->send<Event>(ThreadCommon::QueueManager::master_event_all, &event_sp, 1);
         
         this->SetState(&Menu::sMainView);
