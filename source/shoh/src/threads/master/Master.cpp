@@ -75,8 +75,10 @@ void Master::taskFunction() {
 	for (;;) 
 	{
 		if(!_qm->receive<Event>(ThreadCommon::QueueManager::master_event_all, &data, 10000))
-			data.setDataOf(Event::Rotary, ThreadCommon::RotaryAction::Idle);
-
+		{
+			data.setEvent(Event::Rotary, ThreadCommon::RotaryAction::Idle);
+		}
+		
 		HandleEventType(&data);
 
 		global_clock->updateClock();
