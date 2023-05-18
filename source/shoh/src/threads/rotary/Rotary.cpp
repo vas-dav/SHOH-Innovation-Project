@@ -70,13 +70,13 @@ Rotary::~Rotary()
 void Rotary::taskFunction()
 {
 	auto action_from_rotary_isr = ThreadCommon::RotaryAction::Idle;
-	Event * p_e= new Event(Event::EventType::Rotary, action_from_rotary_isr);
+	Event data(Event::EventType::Rotary, action_from_rotary_isr);
 	
 	for (;;)
 	{
 		xQueueReceive(*p_rotary_isr_q, &action_from_rotary_isr, portMAX_DELAY);
-		p_e->setDataOf(Event::EventType::Rotary, action_from_rotary_isr);
-		_qm->send<Event>(ThreadCommon::QueueManager::master_event_all, p_e, 10);
+		data.setEvent(Event::EventType::Rotary, action_from_rotary_isr);
+		_qm->send<Event>(ThreadCommon::QueueManager::master_event_all, &data, 10);
 	}
 }
 
