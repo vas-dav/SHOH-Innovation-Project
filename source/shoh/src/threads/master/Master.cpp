@@ -13,6 +13,7 @@
 #include "Manager.h"
 #include "Logging.h"
 #include "UserInterface.h"
+#include "Temperature.h"
 #include "queue.h"
 
 static const char* rotary_direction[] = 
@@ -39,30 +40,31 @@ Master::~Master()
 void Master::HandleEventType(Event* e)
 {
 	EventRawData rd = e->getData();
-	switch (e->getType()) 
+	bool send = false;
+	switch (e->getType())
 	{
 		case Event::Null:
 			LOG_ERROR("Master recieved Event::Null with data: %d", rd);
 			break;
 		case Event::Rotary:
 			//Comes from rotary, goes to manager
-			_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
+			send = _qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
 			//LOG_WARNING("Timestamp: %zus, Clock: %zu, Chip freq: %zu", LPC_SCT1->COUNT_U / Chip_Clock_GetMainClockRate(), LPC_SCT1->COUNT_U, Chip_Clock_GetMainClockRate());
-			LOG_DEBUG("Rotary: %s has been forwarded to manager", rotary_direction[rd]);
+			if (send) LOG_DEBUG("Rotary: %s has been forwarded to manager", rotary_direction[rd]);
 			break;
 		case Event::InternalTemp:
 			// TODO remove (deprecated)
 			break;
 		case Event::ExternalTemp:
 			//Comes from sensors, goes to relay & manager
-			_qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
-			_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
-			LOG_DEBUG("ExtTemp: %d has been forwarded to manager and relay", rd);
+			send = _qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
+			send = _qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
+			if (send) LOG_DEBUG("ExtTemp: %d has been forwarded to manager and relay", rd);
 			break;
 		case Event::SetPoint:
 			//Comes from manager, goes to relay 
-			_qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
-			LOG_DEBUG("SetPoint: %d has been forwarded to relay", rd);
+			send = _qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
+			if (send) LOG_DEBUG("SetPoint: %d has been forwarded to relay", rd);
 			break;
 		default:
 			LOG_ERROR("Unknown EventType");
@@ -120,16 +122,19 @@ void thread_master(void* pvParams) {
 
 	LOG_INFO("Master is creating tasks");
 	manager->tm->createTask(thread_manager, "manager",
-							configMINIMAL_STACK_SIZE * 15,tskIDLE_PRIORITY + 1UL,
+							configMINIMAL_STACK_SIZE * 13,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	manager->tm->createTask(thread_rotary, "rotary",
-							configMINIMAL_STACK_SIZE * 9,tskIDLE_PRIORITY + 1UL,
+							configMINIMAL_STACK_SIZE * 8,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	manager->tm->createTask(thread_user_interface, "user_interface",
-							configMINIMAL_STACK_SIZE * 9,tskIDLE_PRIORITY + 1UL,
+							configMINIMAL_STACK_SIZE * 8,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	manager->tm->createTask(thread_relay, "relay",
-							configMINIMAL_STACK_SIZE * 9,tskIDLE_PRIORITY + 1UL,
+							configMINIMAL_STACK_SIZE * 8,tskIDLE_PRIORITY + 1UL,
+							static_cast<void*>(manager));
+	manager->tm->createTask(thread_temperature, "temperature",
+							configMINIMAL_STACK_SIZE * 8,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	LOG_INFO("Master created tasks");
 	m.taskFunction();

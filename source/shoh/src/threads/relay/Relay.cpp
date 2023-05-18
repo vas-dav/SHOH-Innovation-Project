@@ -38,7 +38,8 @@ void inline RelayDevice::RelayOff()
 }
 
 
-Relay::Relay(ThreadCommon::QueueManager* qm): _qm(qm) 
+Relay::Relay(ThreadCommon::QueueManager* qm):
+								_qm(qm), ext_temp(0x7f), setpoint(0)
 {
 	LOG_DEBUG("Creating Relay");
 }
@@ -56,6 +57,7 @@ void Relay::setPowerMode(PowerMode pm)
 		relays[INF_RELAY].RelayOff();
 		relays[SUP_RELAY].RelayOff();
 		LOG_INFO("Heater is turned OFF");
+		break;
 	case PowerMode::POWER_1:
 		relays[INF_RELAY].RelayOn();
 		relays[SUP_RELAY].RelayOff();
@@ -94,9 +96,11 @@ void Relay::parseEvent(Event* e)
 	{
 		case Event::ExternalTemp:
 			ext_temp = rd;
+			LOG_DEBUG("Relay got ext_temp: %d", rd);
 			break;
 		case Event::SetPoint:
 			setpoint = rd;
+			LOG_DEBUG("Relay got setpoint: %d", rd);
 			break;
 		default:
 			assert(0);

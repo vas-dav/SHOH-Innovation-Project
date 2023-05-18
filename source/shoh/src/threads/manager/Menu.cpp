@@ -32,9 +32,11 @@ Menu::readSetPointFromEEPROM (void)
 {
   EventRawData *data = (EventRawData *)eeprom.read_from (EEPROM_START_ADDR,
                                                    sizeof(EventRawData));
-  if ((*data) > 0 && (*data) < 120)
+  if ((*data) > 0 && (*data) < 100)
     {
       set_point.setCurrent(*data);
+      Event e(Event::EventType::SetPoint, set_point.getCurrent());
+      _qm->send<Event>(ThreadCommon::QueueManager::master_event_all, &e , 1);
     }
 }
 
