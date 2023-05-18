@@ -39,7 +39,7 @@ void inline RelayDevice::RelayOff()
 
 
 Relay::Relay(ThreadCommon::QueueManager* qm):
-								_qm(qm), ext_temp(0x7f), setpoint(0)
+								_qm(qm), setpoint(0), ext_temp(0x7f)
 {
 	LOG_DEBUG("Creating Relay");
 }

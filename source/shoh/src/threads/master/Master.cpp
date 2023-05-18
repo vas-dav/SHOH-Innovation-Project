@@ -105,16 +105,16 @@ void thread_master(void* pvParams) {
 	LOG_INFO("Master Started");
 	Master m(manager->qm);
 	LOG_INFO("Master is creating queues");
-	manager->qm->createQueue(100,
+	manager->qm->createQueue(60,
 							sizeof(Event),
 							ThreadCommon::QueueManager::master_event_all);
-	manager->qm->createQueue(20,
+	manager->qm->createQueue(12,
 							sizeof(Event),
 							ThreadCommon::QueueManager::manager_event_master);
-	manager->qm->createQueue(20,
+	manager->qm->createQueue(12,
 							sizeof(UserInterface::InterfaceWithData),
 							ThreadCommon::QueueManager::ui_event_manager);
-	manager->qm->createQueue(10,
+	manager->qm->createQueue(5,
 							sizeof(Event),
 							ThreadCommon::QueueManager::relay_event_master);
 	LOG_INFO("Master created queues");
@@ -122,7 +122,7 @@ void thread_master(void* pvParams) {
 
 	LOG_INFO("Master is creating tasks");
 	manager->tm->createTask(thread_manager, "manager",
-							configMINIMAL_STACK_SIZE * 13,tskIDLE_PRIORITY + 1UL,
+							configMINIMAL_STACK_SIZE * 15,tskIDLE_PRIORITY + 1UL,
 							static_cast<void*>(manager));
 	manager->tm->createTask(thread_rotary, "rotary",
 							configMINIMAL_STACK_SIZE * 8,tskIDLE_PRIORITY + 1UL,
