@@ -40,30 +40,31 @@ Master::~Master()
 void Master::HandleEventType(Event* e)
 {
 	EventRawData rd = e->getData();
-	switch (e->getType()) 
+	bool send = false;
+	switch (e->getType())
 	{
 		case Event::Null:
 			LOG_ERROR("Master recieved Event::Null with data: %d", rd);
 			break;
 		case Event::Rotary:
 			//Comes from rotary, goes to manager
-			_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
+			send = _qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
 			//LOG_WARNING("Timestamp: %zus, Clock: %zu, Chip freq: %zu", LPC_SCT1->COUNT_U / Chip_Clock_GetMainClockRate(), LPC_SCT1->COUNT_U, Chip_Clock_GetMainClockRate());
-			LOG_DEBUG("Rotary: %s has been forwarded to manager", rotary_direction[rd]);
+			if (send) LOG_DEBUG("Rotary: %s has been forwarded to manager", rotary_direction[rd]);
 			break;
 		case Event::InternalTemp:
 			// TODO remove (deprecated)
 			break;
 		case Event::ExternalTemp:
 			//Comes from sensors, goes to relay & manager
-			_qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
-			_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
-			LOG_DEBUG("ExtTemp: %d has been forwarded to manager and relay", rd);
+			send = _qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
+			send = _qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
+			if (send) LOG_DEBUG("ExtTemp: %d has been forwarded to manager and relay", rd);
 			break;
 		case Event::SetPoint:
 			//Comes from manager, goes to relay 
-			_qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
-			LOG_DEBUG("SetPoint: %d has been forwarded to relay", rd);
+			send = _qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
+			if (send) LOG_DEBUG("SetPoint: %d has been forwarded to relay", rd);
 			break;
 		default:
 			LOG_ERROR("Unknown EventType");
