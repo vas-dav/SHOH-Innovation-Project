@@ -57,7 +57,9 @@ uint8_t SensorTempTC74::read()
   //if ready and up - read
   if (this->is_ready() && this->_up_flag)
   {
-    this->read_reg(this->_temp_reg, &data, 1);
+    this->_up_flag = this->read_reg(this->_temp_reg, &data, 1);
+    if(!this->_up_flag)
+      LOG_WARNING("I2C transaction for getting the temperature failed.");
     LOG_DEBUG("Temperature sensor returned: %x", data);
   }
   else

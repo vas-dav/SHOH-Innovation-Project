@@ -7,6 +7,7 @@
 #include "Clock.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "Log.h"
 
 static const uint64_t max_counter_value = 0xffffffff;
 
@@ -71,14 +72,16 @@ Clock::~Clock() {}
  * large, if it will be enough to get overflow amount of overflows
  * 2 times between the function calls the clock will desync.
  * *Barely possible with counter overflows every 89 sec, but still.
+ * *Is fully guarded by mutex, since it is expected to
+ * send log messages one after another, but it can happen simultaneously.
  */
 void Clock::updateClock()
 {
+  this->_guard.lock();
   uint64_t diff_overflows = 0;
   //Remember old number of overflows.
   uint64_t old_overflows = this->_overflows;
 
-  this->_guard.lock();
   //Stop the counter.
   Chip_SCT_SetControl(LPC_SCT1, 0x1 << 1);
   //Capture number of counter overflows.
@@ -86,14 +89,13 @@ void Clock::updateClock()
   //Capture the counter value.
   uint64_t cur_count_u = LPC_SCT1->COUNT_U;
   //Resume the counter.
-  Chip_SCT_ClearControl(LPC_SCT1, 0x1 << 1);
-  this->_guard.unlock();
+  Chip_SCT_ClearControl(LPC_SCT1, 0x1 << 1);  
 
   //Handle overflows.
   diff_overflows = (old_overflows <= this->_overflows)
        //Usually it is new amount of overflows - old.
        ? (this->_overflows - old_overflows)
-       //It is possible that overflows counter will overflow. (Seems that it causes the timer to get insane count when it works.)
+       //It is possible that overflows counter will overflow.
        : (0xffffffffffffffff - old_overflows + this->_overflows);
   
   //First case -> no overflow
@@ -110,7 +112,7 @@ void Clock::updateClock()
     //Add full counter values for all overflows except one.
     (max_counter_value * (diff_overflows - 1)
     //Add the difference between counter values having overflow in mind.
-    + (cur_count_u + (max_counter_value - _last_counter_value)))
+    + (cur_count_u + (max_counter_value - this->_last_counter_value)))
     //Convert to milliseconds.
     * 1000)
     / (double)(Chip_Clock_GetMainClockRate());
@@ -119,6 +121,7 @@ void Clock::updateClock()
   //Remember last counter value.
   //It is important if we won't have an overflow next time.
   this->_last_counter_value = cur_count_u;
+  this->_guard.unlock();
 }
 
 TimeFromStart Clock::getTimeFromStart()
