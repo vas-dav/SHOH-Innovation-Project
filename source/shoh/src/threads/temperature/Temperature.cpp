@@ -17,7 +17,7 @@ void Temperature::taskFunction()
 {
 	SensorTempTC74 ext_temp_sensor(this->_pi2c, 0x4a);
 	Event t (Event::ExternalTemp, -10);
-	int8_t temp_value = 0;
+	int8_t temp_value = -10;
 	for (;;)
 	{
 		if (ext_temp_sensor.is_up())
