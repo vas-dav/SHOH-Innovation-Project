@@ -36,9 +36,10 @@ Master::~Master()
 	LOG_ERROR("Master was deleted");
 }
 
-void Master::HandleEventType(Event* e, Event::EventType type)
+void Master::HandleEventType(Event* e)
 {
-	switch (type) 
+	EventRawData rd = e->getData();
+	switch (e->getType()) 
 	{
 		case Event::Null:
 			break;
@@ -46,7 +47,7 @@ void Master::HandleEventType(Event* e, Event::EventType type)
 			//Comes from rotary, goes to manager
 			_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
 			//LOG_WARNING("Timestamp: %zus, Clock: %zu, Chip freq: %zu", LPC_SCT1->COUNT_U / Chip_Clock_GetMainClockRate(), LPC_SCT1->COUNT_U, Chip_Clock_GetMainClockRate());
-			LOG_DEBUG("Rotary: %s has been forwarded to manager", rotary_direction[e->getDataOf(type)]);
+			LOG_DEBUG("Rotary: %s has been forwarded to manager", rotary_direction[rd]);
 			break;
 		case Event::InternalTemp:
 			// TODO remove (deprecated)
@@ -55,14 +56,15 @@ void Master::HandleEventType(Event* e, Event::EventType type)
 			//Comes from sensors, goes to relay & manager
 			_qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
 			_qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
-			LOG_DEBUG("ExtTemp: %d has been forwarded to manager and relay", e->getDataOf(type));
+			LOG_DEBUG("ExtTemp: %d has been forwarded to manager and relay", rd);
 			break;
 		case Event::SetPoint:
 			//Comes from manager, goes to relay 
 			_qm->send<Event>(ThreadCommon::QueueManager::relay_event_master, e, 0);
-			LOG_DEBUG("SetPoint: %d has been forwarded to relay", e->getDataOf(type));
+			LOG_DEBUG("SetPoint: %d has been forwarded to relay", rd);
 			break;
 		default:
+			LOG_ERROR("Unknown EventType");
 			assert(0);
 			break;
 	}
@@ -70,22 +72,13 @@ void Master::HandleEventType(Event* e, Event::EventType type)
 
 void Master::taskFunction() {
 	Event data(Event::Null, 0);
-	for (;;) {
+	for (;;) 
+	{
 		if(!_qm->receive<Event>(ThreadCommon::QueueManager::master_event_all, &data, 10000))
 			data.setDataOf(Event::Rotary, ThreadCommon::RotaryAction::Idle);
-		
-		for(Event::EventType i :
-	    {Event::Null, 
-		 Event::Rotary, 
-		 Event::InternalTemp,
-		 Event::ExternalTemp,
-		 Event::SetPoint})
-		 {
-			if (data.getDataOf(i) != ERROR_RETURN)
-			{
-				HandleEventType(&data, i);
-			}
-		 }
+
+		HandleEventType(&data);
+
 		global_clock->updateClock();
 	}
 }
