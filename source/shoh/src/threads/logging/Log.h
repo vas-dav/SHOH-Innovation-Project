@@ -30,11 +30,13 @@ extern QueueHandle_t logging_queue;
 #ifdef LOG_COLORED_OUTPUT
 #define C_INFO "\x1b[34mINFO\x1b[0m"
 #define C_DEBUG "\x1b[35mDEBUG\x1b[0m"
+#define C_DEBUG_ISR "\x1b[36mDEBUG_ISR\x1b[0m"
 #define C_WARN "\x1b[33mWARNING\x1b[0m"
 #define C_ERROR "\x1b[31mERROR\x1b[0m"
 #else
 #define C_INFO "INFO"
 #define C_DEBUG "DEBUG"
+#define C_DEBUG_ISR "DEBUG_ISR"
 #define C_WARN "WARNING"
 #define C_ERROR "ERROR"
 #endif
@@ -78,6 +80,30 @@ static void create_log_line(const TimeFromStart _timestamp,
     
 }
 
+static void create_log_line_nots(const char * _status,
+                                const char * _location,
+                                const char * _func,
+                                const size_t _line,
+                                const char * _fmt, ...)
+{
+    va_list args;
+    va_start(args, _fmt);
+    char message [LOG_BUFFER_MAX_CAP] = {0};
+    int message_len = vsnprintf(message, LOG_BUFFER_MAX_CAP, _fmt, args);
+    va_end(args);
+    char buffer [LOG_BUFFER_MAX_CAP] = {0};
+    int buffer_len = snprintf(buffer, LOG_BUFFER_MAX_CAP,
+                             "[%s] In [File: %s] [Func: %s] [Line: %zu]\r\n %.*s",
+                             _status,
+                             _location,
+                             _func,
+                             _line,
+                             message_len,
+                             message);
+    _LOG_STREAMOUT(buffer, buffer_len)
+    
+}
+
 #define LOG_INFO( fmt, ...)                                        \
     create_log_line(global_clock->getTimeFromStart(), C_INFO, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__);
 
@@ -90,8 +116,12 @@ static void create_log_line(const TimeFromStart _timestamp,
 #if LOG_DEBUG_MESSAGES
 #define LOG_DEBUG(fmt, ...)                                        \
     create_log_line(global_clock->getTimeFromStart(), C_DEBUG, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__);
+
+#define LOG_DEBUG_ISR(fmt, ...)                                        \
+    create_log_line_nots(C_DEBUG_ISR, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__);
 #else
 #define LOG_DEBUG(fmt, ...)
+#define LOG_DEBUG_ISR(fmt, ...)  
 #endif
 
 
