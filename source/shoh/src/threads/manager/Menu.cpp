@@ -216,16 +216,18 @@ void Menu::sSetPointMod(const MenuObjEvent &e)
 
 void Menu::constructUIString(uint8_t line, const char *fmt, ...)
 {
+    char buff[17];
     va_list args;
     va_start (args, fmt);
 
     size_t char_line_counter = 0;
     for (uint8_t i = 0; i < line; i++)
     {
-        char_line_counter += 17;
+        char_line_counter += 16;
     }
     
-    vsprintf (screen_text + char_line_counter, fmt, args);
+    vsprintf (buff, fmt, args);
+    memcpy(screen_text + char_line_counter, buff, 16);
     va_end (args);
 }
 
