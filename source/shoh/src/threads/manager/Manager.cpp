@@ -26,7 +26,7 @@ void Manager::taskFunction()
 	for(;;)
 	{
 		_qm->receive<Event>(ThreadCommon::QueueManager::manager_event_master, &data, portMAX_DELAY);
-        _menu.HandleEventPair(&data);
+        _menu.parseEvent(&data);
 	}
 }
 

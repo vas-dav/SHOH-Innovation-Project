@@ -38,7 +38,7 @@ Menu::readSetPointFromEEPROM (void)
     }
 }
 
-void Menu::HandleEventPair (Event *ep)
+void Menu::parseEvent (Event *ep)
 {
     switch(ep->getType()/*EventType*/)
     {
