@@ -12,7 +12,7 @@
 #include <map>
 
 typedef short int EventRawData;
-const EventRawData ERROR_RETURN = -999;
+const EventRawData ERROR_RETURN = -999; // Soon to be depercated
 
 class Event
 {
@@ -31,14 +31,14 @@ public:
     {
         EventRawData rd;
         EventType et;
-    } EventPair;
+    } EventPair; // Soon to be depercated
 
-    Event(Event::EventType type, EventRawData data)
+    Event(Event::EventType type, EventRawData data) // Soon to be depercated
     {
         events.insert({type, data});
     }
 
-    void inline addData(Event::EventType type, EventRawData data)
+    void inline addData(Event::EventType type, EventRawData data) // Soon to be depercated
     {
         const auto pos = events.find(type);
         // No duplicates
@@ -46,7 +46,7 @@ public:
             events.insert({type, data});
     }
 
-    EventRawData getDataOf(Event::EventType e) const
+    EventRawData getDataOf(Event::EventType e) const // Soon to be depercated
     {
         const auto pos = events.find(e);
         if (pos == events.end())
@@ -54,13 +54,36 @@ public:
         return pos->second;
     }
 
-    void inline setDataOf(Event::EventType e, EventRawData data)
+    void inline setDataOf(Event::EventType e, EventRawData data) // Soon to be depercated
     {
         events[e] = data;
     }
 
+/*    Event(Event::EventType type, EventRawData data)
+    {
+        setEvent(type, data);
+    } */
+
+    void setEvent(Event::EventType type, EventRawData data)
+    {
+        _type = type;
+        _data = data;
+    }
+
+    Event::EventType inline getType() const
+    {
+        return _type;
+    }
+
+    EventRawData inline  getData() const
+    {
+        return _data;
+    }
+
 private:
     std::map <Event::EventType, EventRawData> events;
+    Event::EventType _type;
+    EventRawData _data;
 };
 
 
