@@ -29,7 +29,7 @@ extern "C" {
 
   /** 
    * @brief This function is used by FreeRTOS to configure the collection of
-   * time used by tasks.
+   * time used by tasks. (This timer is also used for logging timestamps.)
    */
   void
   vConfigureTimerForRunTimeStats (void)
@@ -54,6 +54,20 @@ extern "C" {
     /* Start timer */
     LPC_SCT1->CONFIG = SCT_CONFIG_32BIT_COUNTER;
     LPC_SCT1->CTRL_U = SCT_CTRL_CLRCTR_L;
+  }
+
+  /**
+   * @brief Used by FreeRTOS to collect runtime statistics.
+   * @paragraph FreeRTOS is unable to handle the counter overflow, so it must be done from our side.
+   * This solution will break eventually later on, presumably after 1193 hours of runtime,
+   * since unsigned long won't be able to hold more than that amount of milliseconds.
+   * FreeRTOS expects to get unsigned long, so there's nothing more that can be done.
+   * @return unsigned long 
+   */
+  unsigned long ulGetTimeForRunTimeStats(void)
+  {
+    return (unsigned long)(((double)(counter_overflows - 1) * max_counter_value) + LPC_SCT1->COUNT_U)
+            / ((double)Chip_Clock_GetMainClockRate() / 1000);
   }
 }
 
