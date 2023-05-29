@@ -117,6 +117,10 @@ static void create_log_line_nots(const char * _status,
 #define LOG_DEBUG(fmt, ...)                                        \
     create_log_line(global_clock->getTimeFromStart(), C_DEBUG, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__);
 
+/*
+ * Even though it doesn't call timer, it still can cause a softlock on the UART transaction.
+ * Left only for short-term debugging purposes.
+ */
 #define LOG_DEBUG_ISR(fmt, ...)                                        \
     create_log_line_nots(C_DEBUG_ISR, __FILE__, __func__, __LINE__, fmt, ##__VA_ARGS__);
 #else

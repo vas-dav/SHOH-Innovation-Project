@@ -22,13 +22,13 @@ enum
 static const char * interface_messages [] = 
 {
     "CURRENT %3d     ",
-    "DESIRED %3d     ",
-    "DESIRED[%3d]    ",
+    "DESIRED  %2d    ",
+    "DESIRED [%2d]   ",
     "   Loading...   "
 };
 
 Menu::Menu(ThreadCommon::QueueManager* qm): _qm(qm),
-current(&Menu::sInitView), ext_temp(-99, 99, 1), set_point(-99, 99, 1)
+current(&Menu::sInitView), ext_temp(-99, 99, 1), set_point(10, 99, 1)
 {
     LOG_DEBUG("Creating Menu");
 	this->SetState(&Menu::sInitView);

@@ -21,10 +21,6 @@ extern "C"
 	portBASE_TYPE xHigherPriorityWoken = pdFALSE;
 	uint8_t data = ThreadCommon::RotaryAction::Right;
 	xQueueSendFromISR (*p_rotary_isr_q, &data,  &xHigherPriorityWoken);
-	if(!xHigherPriorityWoken)
-	{
-		LOG_DEBUG_ISR("[PIN_INT0_IRQn] portEND_SWITCHING_ISR called with False value");
-	}
 	portEND_SWITCHING_ISR(xHigherPriorityWoken);
   }
 
@@ -35,10 +31,6 @@ extern "C"
 	portBASE_TYPE xHigherPriorityWoken = pdFALSE;
 	uint8_t data = ThreadCommon::RotaryAction::Left;
 	xQueueSendFromISR (*p_rotary_isr_q, &data,  &xHigherPriorityWoken);
-	if(!xHigherPriorityWoken)
-	{
-		LOG_DEBUG_ISR("[PIN_INT1_IRQn] portEND_SWITCHING_ISR called with False value");
-	}
 	portEND_SWITCHING_ISR(xHigherPriorityWoken);
   }
 
@@ -49,10 +41,6 @@ extern "C"
 	portBASE_TYPE xHigherPriorityWoken = pdFALSE;
 	uint8_t data = ThreadCommon::RotaryAction::Press;
 	xQueueSendFromISR (*p_rotary_isr_q, &data,  &xHigherPriorityWoken);
-	if(!xHigherPriorityWoken)
-	{
-		LOG_DEBUG_ISR("[PIN_INT2_IRQn] portEND_SWITCHING_ISR called with False value");
-	}
 	portEND_SWITCHING_ISR(xHigherPriorityWoken);
   }
 }
