@@ -29,7 +29,7 @@ extern "C" {
 
   /** 
    * @brief This function is used by FreeRTOS to configure the collection of
-   * time used by tasks.
+   * time used by tasks. (This timer is also used for logging timestamps.)
    */
   void
   vConfigureTimerForRunTimeStats (void)
@@ -54,6 +54,17 @@ extern "C" {
     /* Start timer */
     LPC_SCT1->CONFIG = SCT_CONFIG_32BIT_COUNTER;
     LPC_SCT1->CTRL_U = SCT_CTRL_CLRCTR_L;
+  }
+
+  /**
+   * @brief Used by FreeRTOS to collect runtime statistics.
+   * @paragraph FreeRTOS is unable to handle the counter overflow, so it must be done from our side.
+   * @return configRUN_TIME_COUNTER_TYPE 
+   */
+  configRUN_TIME_COUNTER_TYPE ulGetTimeForRunTimeStats(void)
+  {
+    return (configRUN_TIME_COUNTER_TYPE)(((double)(counter_overflows - 1) * max_counter_value) + LPC_SCT1->COUNT_U)
+            / ((double)Chip_Clock_GetMainClockRate() / 1000);
   }
 }
 

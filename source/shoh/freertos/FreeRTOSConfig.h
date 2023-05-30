@@ -93,7 +93,8 @@
 #define configUSE_COUNTING_SEMAPHORES	1
 #define configGENERATE_RUN_TIME_STATS	1
 #define configRECORD_STACK_HIGH_ADDRESS 1
-#define configUSE_TICKLESS_IDLE 1 
+#define configUSE_TICKLESS_IDLE         1
+#define configRUN_TIME_COUNTER_TYPE     uint64_t
 
 
 /* Co-routine definitions. */
@@ -126,9 +127,10 @@ to exclude the API function. */
  * must set up LPC_SCT1.
  */
 void vConfigureTimerForRunTimeStats(void);
+configRUN_TIME_COUNTER_TYPE ulGetTimeForRunTimeStats(void);
 #define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() vConfigureTimerForRunTimeStats()
 /* The value is read directly from the counter register for efficiency and low overhead. */
-#define portGET_RUN_TIME_COUNTER_VALUE() LPC_SCT1->COUNT_U
+#define portGET_RUN_TIME_COUNTER_VALUE() ulGetTimeForRunTimeStats()
 
 /* Cortex-M specific definitions. */
 #ifdef __NVIC_PRIO_BITS
