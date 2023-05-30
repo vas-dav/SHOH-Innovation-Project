@@ -127,7 +127,7 @@ to exclude the API function. */
  * must set up LPC_SCT1.
  */
 void vConfigureTimerForRunTimeStats(void);
-unsigned long ulGetTimeForRunTimeStats(void);
+configRUN_TIME_COUNTER_TYPE ulGetTimeForRunTimeStats(void);
 #define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() vConfigureTimerForRunTimeStats()
 /* The value is read directly from the counter register for efficiency and low overhead. */
 #define portGET_RUN_TIME_COUNTER_VALUE() ulGetTimeForRunTimeStats()

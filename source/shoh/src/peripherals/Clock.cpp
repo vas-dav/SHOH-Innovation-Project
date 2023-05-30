@@ -59,14 +59,11 @@ extern "C" {
   /**
    * @brief Used by FreeRTOS to collect runtime statistics.
    * @paragraph FreeRTOS is unable to handle the counter overflow, so it must be done from our side.
-   * This solution will break eventually later on, presumably after 1193 hours of runtime,
-   * since unsigned long won't be able to hold more than that amount of milliseconds.
-   * FreeRTOS expects to get unsigned long, so there's nothing more that can be done.
-   * @return unsigned long 
+   * @return configRUN_TIME_COUNTER_TYPE 
    */
-  unsigned long ulGetTimeForRunTimeStats(void)
+  configRUN_TIME_COUNTER_TYPE ulGetTimeForRunTimeStats(void)
   {
-    return (unsigned long)(((double)(counter_overflows - 1) * max_counter_value) + LPC_SCT1->COUNT_U)
+    return (configRUN_TIME_COUNTER_TYPE)(((double)(counter_overflows - 1) * max_counter_value) + LPC_SCT1->COUNT_U)
             / ((double)Chip_Clock_GetMainClockRate() / 1000);
   }
 }
