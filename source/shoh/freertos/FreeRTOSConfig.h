@@ -93,7 +93,8 @@
 #define configUSE_COUNTING_SEMAPHORES	1
 #define configGENERATE_RUN_TIME_STATS	1
 #define configRECORD_STACK_HIGH_ADDRESS 1
-#define configUSE_TICKLESS_IDLE 1 
+#define configUSE_TICKLESS_IDLE         1
+#define configRUN_TIME_COUNTER_TYPE     uint64_t
 
 
 /* Co-routine definitions. */
