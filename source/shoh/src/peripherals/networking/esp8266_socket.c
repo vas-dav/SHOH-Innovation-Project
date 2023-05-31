@@ -86,7 +86,6 @@ static void stPassthrough(smi *ctx, const event *e);
 static void stPassthroughOK(smi *ctx, const event *e);
 static void stAT(smi *ctx, const event *e);
 static void stCommandMode(smi *ctx, const event *e);
-static int cur_state();
 
 static void EspSocketRun(smi *ctx);
 
@@ -118,7 +117,10 @@ void smi_init(smi *ctx)
     ctx->state(ctx, &evEnter); // enter initial state
 }
 
-    
+//Needs a mechanism to return error code after the timeout.
+//Timeout is done by the ctx->timer in states.
+//Tick event should be dispatched every ms, which seems not to be the case. (It's more rare.)
+//Look at the stInit for reference
 int esp_socket(const char *ssid, const char *password)
 {
     smi_init(&EspSocketInstance);
@@ -129,7 +131,6 @@ int esp_socket(const char *ssid, const char *password)
     
     
     while(EspSocketInstance.state != stReady) {
-        //printf("[socket]: Current state %d\r\n", cur_state());
     	// run esp task and run ticks
     	EspSocketRun(&EspSocketInstance);
     }
@@ -137,38 +138,7 @@ int esp_socket(const char *ssid, const char *password)
     return 0;    
 }
 
-int cur_state()
-{
-    int st = -1;
-    if (EspSocketInstance.state == stInit )
-        st = 0;
-    else if (EspSocketInstance.state == stEchoOff )
-        st = 1;
-    else if (EspSocketInstance.state == stStationModeCheck )
-        st = 2;
-    else if (EspSocketInstance.state == stStationModeSet )
-        st = 3;
-    else if (EspSocketInstance.state == stConnectAP )
-        st = 4;
-    else if (EspSocketInstance.state == stReady )
-        st = 5;
-    else if (EspSocketInstance.state == stConnectTCP )
-        st = 6;
-    else if (EspSocketInstance.state == stConnected )
-        st = 7;
-    else if (EspSocketInstance.state == stCloseTCP )
-        st = 8;
-    else if (EspSocketInstance.state == stPassthrough )
-        st = 9;
-    else if (EspSocketInstance.state == stPassthroughOK )
-        st = 10;
-    else if (EspSocketInstance.state == stAT )
-        st = 11;
-    else if (EspSocketInstance.state == stCommandMode )
-        st = 12;
-    return st;
-}
-
+//Needs a mechanism to return error code after the timeout.
 int esp_connect(int sockfd, const char *addr, int port)
 {
     I_DONT_USE(sockfd);
@@ -380,14 +350,19 @@ static void stInit(smi *ctx, const event *e)
 	case eExit:
 		break;
 	case eTick:
-        ++ctx->timer;
+        ++ctx->timer; //increases timer value with every tick
+
         //if(ctx->timer == 2) DEBUGP("[%s]\r\n", ctx->buffer);
+
+        //When it hits five - tries to reach the esp, incresing count of attempts.
         if(ctx->timer >= 5) {
             ctx->timer = 0;
             ++ctx->count;
+            
             if(ctx->count < 2) {
                 serial_write_str(ctx, "AT\r\n");
             }
+            //If done more attempts than expected - give up.
             else {
                 DEBUGP("Error: Module not responding\r\n");
                 TRAN(stAT);
@@ -605,6 +580,10 @@ static void stConnectTCP(smi *ctx, const event *e)
 	case eExit:
 		break;
 	case eTick:
+        ++ctx->timer;
+        if(ctx->timer >= 70) {
+            ctx->timer = 0;
+        }
 		break;
     case eReceive:
         rc = sm_read_result(ctx);
