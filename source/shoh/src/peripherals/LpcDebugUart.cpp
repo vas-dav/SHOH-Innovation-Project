@@ -116,14 +116,14 @@ void LpcDebugUart::set_on_receive(void(*cb)(void))
 
 int  LpcDebugUart::free()
 {
-	std::lock_guard<Fmutex> lock(write_mutex);
+	std::lock_guard<Fmutex> lock(write_debug_mutex);
 
 	return UART_RB_SIZE - RingBuffer_GetCount(&txring);
 }
 
 int  LpcDebugUart::peek()
 {
-	std::lock_guard<Fmutex> lock(read_mutex);
+	std::lock_guard<Fmutex> lock(read_debug_mutex);
 
 	return RingBuffer_GetCount(&rxring);
 }
@@ -135,7 +135,7 @@ int  LpcDebugUart::read(char &c)
 
 int  LpcDebugUart::read(char *buffer, int len)
 {
-	std::lock_guard<Fmutex> lock(read_mutex);
+	std::lock_guard<Fmutex> lock(read_debug_mutex);
 
 	if(RingBuffer_GetCount(&rxring) <= 0) {
 		notify_rx = xTaskGetCurrentTaskHandle();
@@ -151,7 +151,7 @@ int  LpcDebugUart::read(char *buffer, int len)
 
 int  LpcDebugUart::read(char *buffer, int len, TickType_t total_timeout, TickType_t ic_timeout)
 {
-	std::lock_guard<Fmutex> lock(read_mutex);
+	std::lock_guard<Fmutex> lock(read_debug_mutex);
 
 	// we can't read more than ring buffer size at a time
 	if(len > UART_RB_SIZE) len = UART_RB_SIZE;
@@ -181,7 +181,7 @@ int LpcDebugUart::write(const char *s)
 
 int LpcDebugUart::write(const char *buffer, int len)
 {
-	std::lock_guard<Fmutex> lock(write_mutex);
+	std::lock_guard<Fmutex> lock(write_debug_mutex);
 
 	int pos = 0;
 	notify_tx = xTaskGetCurrentTaskHandle();
@@ -214,15 +214,15 @@ bool LpcDebugUart::rxbreak()
 
 void LpcDebugUart::speed(int bps)
 {
-	std::lock_guard<Fmutex> lockw(write_mutex);
-	std::lock_guard<Fmutex> lockr(read_mutex);
+	std::lock_guard<Fmutex> lockw(write_debug_mutex);
+	std::lock_guard<Fmutex> lockr(read_debug_mutex);
 
 	Chip_UART0_SetBaud(uart, bps);
 }
 
 bool LpcDebugUart::txempty()
 {
-	std::lock_guard<Fmutex> lock(write_mutex);
+	std::lock_guard<Fmutex> lock(write_debug_mutex);
 
 	return (RingBuffer_GetCount(&txring) == 0);
 }

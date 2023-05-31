@@ -15,6 +15,7 @@
 #include "UserInterface.h"
 #include "Temperature.h"
 #include "queue.h"
+#include "esp8266_socket.h"
 
 static const char* rotary_direction[] = 
 {
@@ -75,6 +76,8 @@ void Master::HandleEventType(Event* e)
 
 void Master::taskFunction() {
 	Event data(Event::Null, 0);
+	//int soc = esp_socket("SSID", "PASSWORD");
+	//int stat = esp_connect(soc, "IP", 5000);
 	for (;;) 
 	{
 		if(!_qm->receive<Event>(ThreadCommon::QueueManager::master_event_all, &data, 10000))
@@ -85,6 +88,9 @@ void Master::taskFunction() {
 		HandleEventType(&data);
 
 		global_clock->updateClock();
+		//LOG_WARNING("ESP socket status: %d", stat);
+		//if(stat == 0)
+		//	stat = esp_connect(soc, "IP", 5000);
 	}
 }
 

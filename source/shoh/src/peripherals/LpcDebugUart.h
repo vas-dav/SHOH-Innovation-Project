@@ -56,8 +56,8 @@ private:
 	TaskHandle_t notify_rx;
 	TaskHandle_t notify_tx;
 	void (*on_receive)(void); // callback for received data notifications
-	Fmutex read_mutex;
-	Fmutex write_mutex;
+	Fmutex read_debug_mutex;
+	Fmutex write_debug_mutex;
 };
 
 #endif /* LPCUART_H_ */

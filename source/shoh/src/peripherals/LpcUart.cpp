@@ -8,6 +8,8 @@
 #include <cstring>
 #include <mutex>
 #include "LpcUart.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 /* shoh: Important differences
  * We don't have movable pins -> not needed.
@@ -126,6 +128,8 @@ LpcUart::LpcUart(const LpcUartConfig &cfg) {
 	uart = cfg.pUART; // set the actual value after validity checking
 
 
+	//Not that straightforward.
+	//But will work for uart1, kind of...
 	if(cfg.tx.port >= 0) {
 		Chip_IOCON_PinMuxSet(LPC_IOCON, cfg.tx.port, cfg.tx.pin, (IOCON_FUNC4 | IOCON_MODE_INACT | IOCON_DIGMODE_EN));
 	}
