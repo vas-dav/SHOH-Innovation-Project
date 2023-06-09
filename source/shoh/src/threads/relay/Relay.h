@@ -48,8 +48,8 @@ public:
 	void utilizeEventData();
 private:
 	ThreadCommon::QueueManager* _qm;
-	RelayDevice relays [2] = {{0, 24, 0},
-							  {0, 26, 1}};
+	RelayDevice relays [2] = {{0, 11, 0},
+							  {0, 23, 1}};
 
 	void parseEvent(Event * e);
 	int8_t setpoint, ext_temp;
