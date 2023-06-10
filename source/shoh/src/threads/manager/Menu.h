@@ -35,6 +35,7 @@ private:
   /* States */
   void sInitView(const MenuObjEvent &e);
   void sMainView(const MenuObjEvent &e);
+  void sErrorView(const MenuObjEvent &e);
   void sSetPointMod(const MenuObjEvent &e);
   /* Methods */
   void constructUIString(uint8_t line, const char *fmt, ...);

@@ -16,14 +16,15 @@ Temperature::~Temperature() {}
 void Temperature::taskFunction()
 {
 	SensorTempTC74 ext_temp_sensor(this->_pi2c, 0x4a);
-	Event t (Event::ExternalTemp, -10);
-	int8_t temp_value = -10;
+	Event t (Event::ExternalTemp, -128);
+	int8_t temp_value = -128;
+	_qm->send<Event>(ThreadCommon::QueueManager::master_event_all, &t, 0);
 	for (;;)
 	{
 		if (ext_temp_sensor.is_up())
 			temp_value = ext_temp_sensor.getTemperature();
 
-		if(temp_value == -10) 
+		if(temp_value == -128) 
 		{
 			LOG_ERROR("Failed to get temperature.");
 			continue;
