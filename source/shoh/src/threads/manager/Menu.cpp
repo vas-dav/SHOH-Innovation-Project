@@ -17,7 +17,7 @@ enum
     DESIRED_TEMP,
     DESIRED_TEMP_F,
     LOADING,
-    ERROR,
+    ERROR_SCREEN,
     DEVICE_CORRUPTED
 };
 
@@ -62,6 +62,7 @@ Menu::readSetPointFromEEPROM (void)
 
 void Menu::parseEvent (Event *ep)
 {
+    EventRawData ext_temp;
     switch(ep->getType()/*EventType*/)
     {
         case Event::Rotary:
@@ -90,7 +91,7 @@ void Menu::parseEvent (Event *ep)
             break;
         case Event::ExternalTemp:
             //Change ExternalTemp value. -99 <= ext_temp <= 99
-            EventRawData ext_temp = ep->getData();
+            ext_temp = ep->getData();
             if(ext_temp == -128)
             {
               LOG_ERROR("Menu recieved -128 as ext_temp.");
@@ -182,7 +183,7 @@ void Menu::sErrorView(const MenuObjEvent &e)
     {
     case MenuObjEvent::eFocus: 
         LOG_DEBUG("enter sErrorView");
-        constructUIString(0, interface_messages[ERROR]);
+        constructUIString(0, interface_messages[ERROR_SCREEN]);
         constructUIString(1, interface_messages[DEVICE_CORRUPTED]);
         this->NotifyAndRefreshUI();
         break;
