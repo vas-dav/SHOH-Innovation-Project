@@ -16,7 +16,9 @@ enum
     CURRENT_TEMP,
     DESIRED_TEMP,
     DESIRED_TEMP_F,
-    LOADING
+    LOADING,
+    ERROR_SCREEN,
+    DEVICE_CORRUPTED
 };
 
 static const char * interface_messages [] = 
@@ -24,7 +26,9 @@ static const char * interface_messages [] =
     "CURRENT %3d     ",
     "DESIRED  %2d    ",
     "DESIRED [%2d]   ",
-    "   Loading...   "
+    "   Loading...   ",
+    "    ERROR       ",
+    "Device Corrupted"
 };
 
 Menu::Menu(ThreadCommon::QueueManager* qm): _qm(qm),
@@ -58,6 +62,7 @@ Menu::readSetPointFromEEPROM (void)
 
 void Menu::parseEvent (Event *ep)
 {
+    EventRawData ext_temp;
     switch(ep->getType()/*EventType*/)
     {
         case Event::Rotary:
@@ -86,7 +91,14 @@ void Menu::parseEvent (Event *ep)
             break;
         case Event::ExternalTemp:
             //Change ExternalTemp value. -99 <= ext_temp <= 99
-            this->ext_temp.setCurrent(ep->getData());
+            ext_temp = ep->getData();
+            if(ext_temp == -128)
+            {
+              LOG_ERROR("Menu recieved -128 as ext_temp.");
+              this->SetState(&Menu::sErrorView);
+              break;
+            }
+            this->ext_temp.setCurrent(ext_temp);
             //Refresh the menu screen.
             this->HandleObj(MenuObjEvent (MenuObjEvent::eRefresh));
             break;
@@ -158,6 +170,40 @@ void Menu::sMainView(const MenuObjEvent &e)
         constructUIString(0, interface_messages[CURRENT_TEMP], this->ext_temp.getCurrent());
         LOG_DEBUG("refresh sMainView");
         this->NotifyAndRefreshUI();
+        break;
+    default:
+        break;
+    }
+}
+
+void Menu::sErrorView(const MenuObjEvent &e)
+{
+    static char screen_text[64];
+    switch (e.type)
+    {
+    case MenuObjEvent::eFocus: 
+        LOG_DEBUG("enter sErrorView");
+        constructUIString(0, interface_messages[ERROR_SCREEN]);
+        constructUIString(1, interface_messages[DEVICE_CORRUPTED]);
+        this->NotifyAndRefreshUI();
+        break;
+    case MenuObjEvent::eUnFocus:
+        LOG_DEBUG("leave sErrorView");
+        memset(screen_text, 0, 64); // Clear screen
+        this->NotifyAndRefreshUI();
+        break;
+    case MenuObjEvent::eRollClockWise:
+        break;
+    case MenuObjEvent::eRollCClockWise:
+        break;
+    case MenuObjEvent::eClick:
+        break;
+    case MenuObjEvent::eRefresh:
+        LOG_DEBUG("refresh sErrorView");
+        if (this->ext_temp.getCurrent() != -128)
+        {
+          this->SetState(&Menu::sInitView);
+        }
         break;
     default:
         break;
