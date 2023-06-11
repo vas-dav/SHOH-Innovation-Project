@@ -27,6 +27,7 @@ void Temperature::taskFunction()
 		if(temp_value == -128) 
 		{
 			LOG_ERROR("Failed to get temperature.");
+			vTaskDelay(10000);	
 			continue;
 		}
 

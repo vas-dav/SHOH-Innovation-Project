@@ -20,9 +20,9 @@ public:
 private:
 	Event* message;
 	ThreadCommon::QueueManager* _qm;
-	DigitalIoPin signal[3] = { { 1, 18, true, true, false, true, PIN_INT0_IRQn}, //SW1 //Right //0 1
-                               { 2, 12, true, true, false, true, PIN_INT1_IRQn}, //SW2 //Left //0 16
-                               { 2, 11, true, false, false, true, PIN_INT2_IRQn} }; //Press //1 8
+	DigitalIoPin signal[3] = { { 1, 18, true, true, false, true, PIN_INT0_IRQn}, //sigA
+                               { 2, 12, true, true, false}, //sigB
+                               { 0, 1, true, true, false, true, PIN_INT1_IRQn} }; //Press, sw //2 11
 };
 
 void thread_rotary(void* pvParams);
