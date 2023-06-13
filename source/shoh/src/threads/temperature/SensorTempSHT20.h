@@ -18,6 +18,7 @@ public:
   bool is_up();
 private:
   uint16_t read();
+  bool crc_check(uint8_t * data, uint8_t nbrOfBytes, uint8_t checksum);
 
   I2C* _pi2c;
   const uint8_t _dev_addr;
@@ -27,6 +28,7 @@ private:
   const uint8_t _com_write_ur; //user register
   const uint8_t _com_read_ur; //user register
   const uint8_t _com_soft_reset;
+  const uint16_t _polynominal;
 };
 
 #endif /* THREADS_TEMPERATURE_SENSORTEMPSHT20_H_ */

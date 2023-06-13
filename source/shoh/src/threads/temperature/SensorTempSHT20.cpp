@@ -31,7 +31,7 @@ SensorTempSHT20::SensorTempSHT20(I2C* pi2c)
 : _pi2c(pi2c), _dev_addr(0x40), _up_flag(false),
 _com_read_hold(0xe3), _com_read_nohold(0xf3),
 _com_write_ur(0xe6), _com_read_ur(0xe7),
-_com_soft_reset(0xfe)
+_com_soft_reset(0xfe), _polynominal(0x131)
 {
   this->read();
 }
@@ -71,32 +71,24 @@ uint16_t SensorTempSHT20::read()
   raw_temp |= (rbuf[0] << 8);
   raw_temp |= (rbuf[1] & 0xfc);
   crc = rbuf[2];
-  LOG_WARNING("Raw data: %04x; CRC: %x", raw_temp, crc);
 
-  //TODO: crc check here.
-
+  if (this->crc_check(rbuf, 2, crc))
+    LOG_WARNING("Temperature sensor reported crc mismatch.\nRaw data: %04x; CRC: %x", raw_temp, crc);
+  
   return raw_temp;
 }
 
-/*
-const int16_t POLYNOMIAL = 0x131;
-
-int8_t SHT2x_CheckCrc(int8_t data[], int8_t nbrOfBytes, int8_t checksum)
+bool SensorTempSHT20::crc_check(uint8_t * data, uint8_t nbrOfBytes, uint8_t checksum)
 {
-    int8_t crc = 0;
-    int8_t bit;
-    int8_t byteCtr;
-    //calculates 8-Bit checksum with given polynomial
-    for (byteCtr = 0; byteCtr < nbrOfBytes; ++byteCtr)
-    {
-        crc ^= (data[byteCtr]);
-        for ( bit = 8; bit > 0; --bit)
-        {
-            if (crc & 0x80) crc = (crc << 1) ^ POLYNOMIAL;
-            else crc = (crc << 1);
-        }
-    }
-    if (crc != checksum) return 1;
-    else return 0;
+  uint8_t crc = 0;
+  uint8_t bit;
+  uint8_t byteCtr;
+  //Calculates 8-Bit checksum with given _polynomial
+  for (byteCtr = 0; byteCtr < nbrOfBytes; ++byteCtr)
+  {
+    crc ^= (data[byteCtr]);
+    for ( bit = 8; bit > 0; --bit)
+      crc = (crc & 0x80) ? ((crc << 1) ^ this->_polynominal) : (crc << 1);
+  }
+  return crc != checksum;
 }
-*/
