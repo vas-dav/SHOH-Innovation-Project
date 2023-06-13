@@ -22,7 +22,7 @@ private:
 	ThreadCommon::QueueManager* _qm;
 	DigitalIoPin signal[3] = { { 1, 18, true, true, false, true, PIN_INT0_IRQn}, //sigA
                                { 2, 12, true, true, false}, //sigB
-                               { 0, 1, true, true, false, true, PIN_INT1_IRQn} }; //Press, sw //2 11
+                               { 0, 2, true, true, false, true, PIN_INT1_IRQn} }; //Press, sw //2 11 (pin without interrupt) //0 1 (board button)
 };
 
 void thread_rotary(void* pvParams);
