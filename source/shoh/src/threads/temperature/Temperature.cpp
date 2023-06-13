@@ -5,7 +5,8 @@
  */
 
 #include "Temperature.h"
-#include "SensorTempTC74.h"
+//#include "SensorTempTC74.h"
+#include "SensorTempSHT20.h"
 #include "Event.h"
 #include "Log.h"
 
@@ -15,7 +16,8 @@ Temperature::~Temperature() {}
 
 void Temperature::taskFunction()
 {
-	SensorTempTC74 ext_temp_sensor(this->_pi2c, 0x4a);
+	//SensorTempTC74 ext_temp_sensor(this->_pi2c, 0x4a);
+	SensorTempSHT20 ext_temp_sensor(this->_pi2c);
 	Event t (Event::ExternalTemp, -128);
 	int8_t temp_value = -128;
 	_qm->send<Event>(ThreadCommon::QueueManager::master_event_all, &t, 0);

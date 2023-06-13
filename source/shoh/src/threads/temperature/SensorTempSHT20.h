@@ -12,17 +12,21 @@
 
 class SensorTempSHT20 {
 public:
-	SensorTempSHT20(I2C* pi2c);
-	virtual ~SensorTempSHT20();
+  SensorTempSHT20(I2C* pi2c);
+  virtual ~SensorTempSHT20();
+  int8_t getTemperature();
+  bool is_up();
 private:
-	uint16_t read();
+  uint16_t read();
 
-	bool write_com(uint8_t com, uint8_t *trdata, const uint16_t size);
-	bool read_com(uint8_t com, uint8_t *rdata, uint16_t size);
-
-	I2C* _pi2c;
-	const uint8_t _dev_addr;
-	bool _up_flag;
+  I2C* _pi2c;
+  const uint8_t _dev_addr;
+  bool _up_flag;
+  const uint8_t _com_read_hold;
+  const uint8_t _com_read_nohold;
+  const uint8_t _com_write_ur; //user register
+  const uint8_t _com_read_ur; //user register
+  const uint8_t _com_soft_reset;
 };
 
 #endif /* THREADS_TEMPERATURE_SENSORTEMPSHT20_H_ */
