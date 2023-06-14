@@ -98,7 +98,7 @@ uint16_t SensorTempSHT20::read()
   crc = rbuf[2];
 
   if (this->crc_check(rbuf, 2, crc))
-    LOG_WARNING("Temperature sensor reported crc mismatch.\nRaw data: %04x; CRC: %x", raw_temp, crc);
+    LOG_WARNING("Temperature sensor reported crc mismatch. Raw data: %04x; CRC: %x", raw_temp, crc);
   
   return raw_temp;
 }
