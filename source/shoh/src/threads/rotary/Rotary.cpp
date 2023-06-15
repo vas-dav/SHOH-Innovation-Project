@@ -12,6 +12,8 @@
 
 static QueueHandle_t * p_rotary_isr_q;
 
+static DigitalIoPin * p_sigB;
+
 extern "C" 
 {
   void
@@ -19,11 +21,17 @@ extern "C"
   {
 	Chip_PININT_ClearIntStatus (LPC_PININT, PININTCH (PIN_INT0_IRQn));
 	portBASE_TYPE xHigherPriorityWoken = pdFALSE;
-	uint8_t data = ThreadCommon::RotaryAction::Right;
+	uint8_t data;
+
+	if (p_sigB->read())
+		data = ThreadCommon::RotaryAction::Left;
+	else
+		data = ThreadCommon::RotaryAction::Right;
+
 	xQueueSendFromISR (*p_rotary_isr_q, &data,  &xHigherPriorityWoken);
 	portEND_SWITCHING_ISR(xHigherPriorityWoken);
   }
-
+/*
   void
   PIN_INT1_IRQHandler (void)
   {
@@ -33,11 +41,11 @@ extern "C"
 	xQueueSendFromISR (*p_rotary_isr_q, &data,  &xHigherPriorityWoken);
 	portEND_SWITCHING_ISR(xHigherPriorityWoken);
   }
-
+*/
   void
-  PIN_INT2_IRQHandler (void)
+  PIN_INT1_IRQHandler (void)
   {
-    Chip_PININT_ClearIntStatus (LPC_PININT, PININTCH (PIN_INT2_IRQn));
+    Chip_PININT_ClearIntStatus (LPC_PININT, PININTCH (PIN_INT1_IRQn));
 	portBASE_TYPE xHigherPriorityWoken = pdFALSE;
 	uint8_t data = ThreadCommon::RotaryAction::Press;
 	xQueueSendFromISR (*p_rotary_isr_q, &data,  &xHigherPriorityWoken);
@@ -48,6 +56,7 @@ extern "C"
 Rotary::Rotary(ThreadCommon::QueueManager* qm) : _qm(qm) 
 {
 	LOG_DEBUG("Creating Rotary");
+	p_sigB = &(this->signal[1]);
 }
 
 Rotary::~Rotary() 

@@ -75,19 +75,19 @@ void UserInterface::handleLCD(LiquidCrystal *lcd, const char *str)
 
 void UserInterface::initLCD1()
 {
-	this->lcd1_rs = new DigitalIoPin(1, 9, false);
-	this->lcd1_en = new DigitalIoPin(0, 14, false);
-	this->lcd1_d4 = new DigitalIoPin(0, 13, false);
-	this->lcd1_d5 = new DigitalIoPin(0, 12, false);
-	this->lcd1_d6 = new DigitalIoPin(0, 23, false);
-	this->lcd1_d7 = new DigitalIoPin(0, 11, false);
+	this->lcd1_rs = new DigitalIoPin(1, 24, false);//(1, 18, false);
+	this->lcd1_en = new DigitalIoPin(1, 26, false);//(1, 24, false);
+	this->lcd1_d4 = new DigitalIoPin(1, 27, false);//(1, 19, false);
+	this->lcd1_d5 = new DigitalIoPin(1, 25, false);//(1, 26, false);
+	this->lcd1_d6 = new DigitalIoPin(1, 28, false);//(1, 27, false);
+	this->lcd1_d7 = new DigitalIoPin(2, 3, false);//(1, 25, false);
 
 	this->lcd1_rs->write(false);
 	this->lcd1_en->write(false);
 	this->lcd1_d4->write(false);
 	this->lcd1_d5->write(false);
-  	this->lcd1_d6->write(false);
-  	this->lcd1_d7->write(false);
+	this->lcd1_d6->write(false);
+	this->lcd1_d7->write(false);
 	// LCD init.
 	this->lcd1 = new LiquidCrystal(this->lcd1_rs, this->lcd1_en, this->lcd1_d4,
 								   this->lcd1_d5, this->lcd1_d6, this->lcd1_d7);

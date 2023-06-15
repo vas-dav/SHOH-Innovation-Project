@@ -5,7 +5,8 @@
  */
 
 #include "Temperature.h"
-#include "SensorTempTC74.h"
+//#include "SensorTempTC74.h"
+#include "SensorTempSHT20.h"
 #include "Event.h"
 #include "Log.h"
 
@@ -15,7 +16,8 @@ Temperature::~Temperature() {}
 
 void Temperature::taskFunction()
 {
-	SensorTempTC74 ext_temp_sensor(this->_pi2c, 0x4a);
+	//SensorTempTC74 ext_temp_sensor(this->_pi2c, 0x4a);
+	SensorTempSHT20 ext_temp_sensor(this->_pi2c);
 	Event t (Event::ExternalTemp, -128);
 	int8_t temp_value = -128;
 	_qm->send<Event>(ThreadCommon::QueueManager::master_event_all, &t, 0);
@@ -27,6 +29,7 @@ void Temperature::taskFunction()
 		if(temp_value == -128) 
 		{
 			LOG_ERROR("Failed to get temperature.");
+			vTaskDelay(10000);	
 			continue;
 		}
 
@@ -40,7 +43,7 @@ void Temperature::taskFunction()
 void thread_temperature(void* pvParams)
 {
 	ThreadCommon::CommonManagers * manager = static_cast<ThreadCommon::CommonManagers*>(pvParams);
-	I2C_config conf{0x4a, 100000};
+	I2C_config conf{0, 100000};
 	I2C i2c(conf);
 	Temperature t(manager->qm, &i2c);
 	t.taskFunction();
