@@ -57,8 +57,12 @@ I2C::I2C (const I2C_config &cfg) : device (nullptr)
   */
   //Manual: Table 83 & 90
   Chip_SYSCTL_PeriphReset(RESET_I2C0);
-  Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 4, IOCON_FUNC1 | IOCON_DIGMODE_EN | cfg.i2c_mode);
-  Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 5, IOCON_FUNC1 | IOCON_DIGMODE_EN | cfg.i2c_mode);
+  Chip_IOCON_PinMuxSet(LPC_IOCON, ThreadCommon::PORT_I2C_SCL, 
+                      ThreadCommon::PIN_I2C_SCL, IOCON_FUNC1 |
+                       IOCON_DIGMODE_EN | cfg.i2c_mode);
+  Chip_IOCON_PinMuxSet(LPC_IOCON, ThreadCommon::PORT_I2C_SDA, 
+                      ThreadCommon::PIN_I2C_SDA, IOCON_FUNC1 |
+                       IOCON_DIGMODE_EN | cfg.i2c_mode);
   //}
   // else {
   // currently we support only I2C number 0
