@@ -16,7 +16,7 @@ extern QueueHandle_t logging_queue;
 /* ================= Settings ================== */
 #define LOG_COLORED_OUTPUT
 #define HIGH_PRIORITY_DEBUG
-#define LOG_DEBUG_MESSAGES 1
+#define LOG_DEBUG_MESSAGES 0
 /* ================= Settings ================== */
 
 // internal debug defines

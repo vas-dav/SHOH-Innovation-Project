@@ -24,11 +24,11 @@ private:
 								 ThreadCommon::PIN_ROTARY_SIG_A, 
 								 true, true, false, true, PIN_INT0_IRQn}, 
                                { ThreadCommon::PORT_ROTARY_SIG_B, 
-							     ThreadCommon::PIN_ROTARY_SIG_A, 
+							     ThreadCommon::PIN_ROTARY_SIG_B,
 								 true, true, false}, 
                                { ThreadCommon::PORT_ROTARY_PRESS, 
-							     ThreadCommon::PIN_ROTARY_SIG_A, 
-								 true, true, false, true, PIN_INT1_IRQn} }; 
+							     ThreadCommon::PIN_ROTARY_PRESS,
+								 true, true, false, true, PIN_INT1_IRQn} };
 };
 
 void thread_rotary(void* pvParams);

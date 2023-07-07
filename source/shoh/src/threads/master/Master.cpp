@@ -50,7 +50,7 @@ void Master::HandleEventType(Event* e)
 			//Comes from rotary, goes to manager
 			send = _qm->send<Event>(ThreadCommon::QueueManager::manager_event_master, e, 0);
 			//LOG_WARNING("Timestamp: %zus, Clock: %zu, Chip freq: %zu", LPC_SCT1->COUNT_U / Chip_Clock_GetMainClockRate(), LPC_SCT1->COUNT_U, Chip_Clock_GetMainClockRate());
-			if (send) LOG_DEBUG("Rotary: %s has been forwarded to manager", rotary_direction[rd]);
+			if (send) LOG_INFO("Rotary: %s has been forwarded to manager", rotary_direction[rd]);
 			break;
 		case Event::InternalTemp:
 			// TODO remove (deprecated)

@@ -20,7 +20,7 @@ void Temperature::taskFunction()
 	SensorTempSHT20 ext_temp_sensor(this->_pi2c);
 	Event t (Event::ExternalTemp, -128);
 	int8_t temp_value = -128;
-	_qm->send<Event>(ThreadCommon::QueueManager::master_event_all, &t, 0);
+	while(ext_temp_sensor.is_up() != true);
 	for (;;)
 	{
 		if (ext_temp_sensor.is_up())
