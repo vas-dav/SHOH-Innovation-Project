@@ -75,12 +75,18 @@ void UserInterface::handleLCD(LiquidCrystal *lcd, const char *str)
 
 void UserInterface::initLCD1()
 {
-	this->lcd1_rs = new DigitalIoPin(1, 24, false);//(1, 18, false);
-	this->lcd1_en = new DigitalIoPin(1, 26, false);//(1, 24, false);
-	this->lcd1_d4 = new DigitalIoPin(1, 27, false);//(1, 19, false);
-	this->lcd1_d5 = new DigitalIoPin(1, 25, false);//(1, 26, false);
-	this->lcd1_d6 = new DigitalIoPin(1, 28, false);//(1, 27, false);
-	this->lcd1_d7 = new DigitalIoPin(2, 3, false);//(1, 25, false);
+	this->lcd1_rs = new DigitalIoPin(ThreadCommon::PORT_LCD_RS, 
+									 ThreadCommon::PIN_LCD_RS, false);//(1, 18, false);
+	this->lcd1_en = new DigitalIoPin(ThreadCommon::PORT_LCD_EN, 
+									 ThreadCommon::PIN_LCD_EN, false);//(1, 24, false);
+	this->lcd1_d4 = new DigitalIoPin(ThreadCommon::PORT_LCD_D4, 
+									 ThreadCommon::PIN_LCD_D4, false);//(1, 19, false);
+	this->lcd1_d5 = new DigitalIoPin(ThreadCommon::PORT_LCD_D5, 
+									 ThreadCommon::PIN_LCD_D5, false);//(1, 26, false);
+	this->lcd1_d6 = new DigitalIoPin(ThreadCommon::PORT_LCD_D6, 
+									 ThreadCommon::PIN_LCD_D6, false);//(1, 27, false);
+	this->lcd1_d7 = new DigitalIoPin(ThreadCommon::PORT_LCD_D7, 
+									 ThreadCommon::PIN_LCD_D7, false);//(1, 25, false);
 
 	this->lcd1_rs->write(false);
 	this->lcd1_en->write(false);

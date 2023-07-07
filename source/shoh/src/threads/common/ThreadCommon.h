@@ -13,12 +13,12 @@
 #include <string>
 #include <map>
 #include "queue.h"
+#include "pinportmap.h"
 #include "task.h"
 #include <assert.h>
 
 namespace ThreadCommon
 {
-
     enum RotaryAction 
 	{
 		Right,

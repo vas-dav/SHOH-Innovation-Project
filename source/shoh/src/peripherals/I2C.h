@@ -10,6 +10,7 @@
 
 #include "chip.h"
 #include "board.h"
+#include "pinportmap.h"
 
 struct I2C_config {
 	unsigned int device_number;
